@@ -6,7 +6,7 @@ header {
 
 table {
 	border-collapse: separate;
-    border-spacing: 2px;
+    border-spacing: 4px;
   	width: 100%;
 }
 
@@ -22,6 +22,37 @@ tr:hover {
 
 tr {
 	height: 30px;
+}
+
+.nameHeader {
+	font-weight: bold;
+	margin-top: 6px;
+	margin-bottom: 4px;
+}
+
+.line {
+	margin-bottom: -3px;
+}
+
+.lastLine {
+	margin-bottom: 6px;
+}
+
+.loader {
+	margin-top: 15px;
+	position: absolute;
+    left: 45%;
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #dc6f68; /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* The Modal (background) */
@@ -44,7 +75,7 @@ tr {
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 50%; /* Could be more or less, depending on screen size */
 }
 
 /* The Close Button */
@@ -55,11 +86,24 @@ tr {
     font-weight: bold;
 }
 
+.passwordPrompt {
+	margin-right: 30px;
+}
+
+.submitButton {
+	margin-top: 15px;
+}
+
 .close:hover,
 .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
 }
+
+::-webkit-input-placeholder { color: #e5e5e5; }
+::-moz-placeholder {color: #e5e5e5; }
+:-ms-input-placeholder { color: #e5e5e5; } 
+:-o-input-placeholder { color: #e5e5e5; } 
 
 
