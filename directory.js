@@ -9,20 +9,61 @@ var config = {
 };
 
 firebase.initializeApp(config);
-var ref = firebase.database().ref("Valleybrook Community Church/Directory");
+
+var church = localStorage.getItem('church');
+var switchChurchesButton = document.getElementById("switchChurchesButton");
+
+switchChurchesButton.onclick = function() {
+	window.location.href = "index.html";
+}
+
+if (church == null) {
+	window.location.href = "index.html"
+}
+
+var ref = firebase.database().ref(church + "/Directory");
+
+var churchName = document.getElementById('churchName');
+churchName.innerHTML = church;
 
 ref.once("value").then(function(snapshot) {
   var families = [];
-  snapshot.forEach(function(childSnapshot) {
+  snapshot.forEach(function(family) {
 
-    var family = {
-  	 name: childSnapshot.child('name').val(),
-  	 phone: childSnapshot.child('phone').val(),
-  	 email: childSnapshot.child('email').val(),
+  	var people = [];
+  	family.child('People').forEach(function(person) {
+    	var newPerson = {
+    		name: person.child('name').val(), 
+    		type: person.child('type').val(), 
+    		phone: person.child('phone').val(),
+    		email: person.child('email').val(), 
+    		birthOrder: person.child('birthOrder').val(), 
+    	};
+    	people.push(newPerson);	
+    	console.log(newPerson);
+    })
+
+    var newFamily = {
+     key: family.key,
+  	 name: family.child('name').val(),
+  	 phone: family.child('phone').val(),
+  	 email: family.child('email').val(),
+  	 street: family.child('Address').child('street').val(),
+  	 line2: family.child('Address').child('line2').val(),
+  	 line3: family.child('Address').child('line3').val(),
+  	 city: family.child('Address').child('city').val(),
+  	 state: family.child('Address').child('state').val(),
+  	 zip: family.child('Address').child('zip').val(),
+  	 people: people
     };
 
-    addRow(family.name, family.phone, family.email);
-    families.push(family);
+    var cityStateZip = "";
+    if (newFamily.city != "") {
+    	cityStateZip = newFamily.city + ", " + newFamily.state + " " + newFamily.zip;
+	}
+
+    addRow(family.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, cityStateZip, newFamily.people);
+    families.push(newFamily);
   })
 
   localStorage.setItem("families", JSON.stringify(families));
@@ -33,7 +74,63 @@ ref.once("value").then(function(snapshot) {
 
 });
 
-function addRow(name, phone, email) {
+function header(name, people) {
+	var husband = "";
+	var wife = "";
+	var single = "";
+	people.forEach(function(person) {
+		if (person.type == "Husband") {
+			husband = person.name;
+		} else if (person.type == "Wife") {
+			wife = person.name;
+		} else if (person.type == "Single") {
+			single = person.name;
+		}
+	})
+	if (husband != "") {
+		return name + ", " + husband + " & " + wife;
+	} else {
+		return name + ", " + single;
+	}
+}
+
+function childrenString(people) {
+	people.sort(compare);
+	children = [];
+	people.forEach(function(person) {
+		if (person.type == "Child") {
+			children.push(person.name);
+		}
+	})
+	if (children.length == 1) {
+		return children[0];
+	} else if (children.length == 2) {
+		return children[0] + " & " + children[1];
+	} else if (children.length > 2) {
+		var childrenString = children[0];
+		for (i = 1; i < children.length; i++) {
+			if (i < children.length - 1) {
+				childrenString = childrenString + ", " + children[i];
+			} else {
+				childrenString = childrenString + ", & " + children[i];
+			}
+		}
+		return childrenString;
+	} else {
+		return "";
+	}
+	return "";
+}
+
+function compare(a, b) {
+  if (a.birthOrder < b.birthOrder)
+    return -1;
+  if (a.birthOrder > b.birthOrder)
+    return 1;
+  return 0;
+}
+
+function addRow(key, name, phone, email, street, line2, line3, cityStateZip, people) {
 
   if (!document.getElementsByTagName) return;
 
@@ -45,7 +142,7 @@ function addRow(name, phone, email) {
    	cell.setAttribute("class", "cell");
     	nameElement = document.createElement("p");
     	nameElement.setAttribute("class", "nameHeader");
-    	nameNode = document.createTextNode(name);
+    	nameNode = document.createTextNode(header(name, people));
     	nameElement.appendChild(nameNode);
     	cell.appendChild(nameElement);
 
@@ -65,7 +162,58 @@ function addRow(name, phone, email) {
     		cell.appendChild(emailElement);
     	}
 
-    if (email != "") {
+    	if (street != "") {
+    		streetElement = document.createElement("p");
+    		streetElement.setAttribute("class", "line");
+    		streetNode = document.createTextNode(street);
+    		streetElement.appendChild(streetNode);
+    		cell.appendChild(streetElement);
+    	}
+
+    	if (line2 != "") {
+    		line2Element = document.createElement("p");
+    		line2Element.setAttribute("class", "line");
+    		line2Node = document.createTextNode(line2);
+    		line2Element.appendChild(line2Node);
+    		cell.appendChild(line2Element);
+    	}
+
+    	if (line3 != "") {
+    		line3Element = document.createElement("p");
+    		line3Element.setAttribute("class", "line");
+    		line3Node = document.createTextNode(line3);
+    		line3Element.appendChild(line3Node);
+    		cell.appendChild(line3Element);
+    	}
+
+    	if (cityStateZip != "") {
+    		cityStateZipElement = document.createElement("p");
+    		cityStateZipElement.setAttribute("class", "line");
+    		cityStateZipNode = document.createTextNode(cityStateZip);
+    		cityStateZipElement.appendChild(cityStateZipNode);
+    		cell.appendChild(cityStateZipElement);
+    	}
+
+    	var children = childrenString(people);
+    	if (children != "") {
+    		childrenStringElement = document.createElement("p");
+    		childrenStringElement.setAttribute("class", "line");
+    		childrenStringNode = document.createTextNode(children);
+    		childrenStringElement.appendChild(childrenStringNode);
+    		cell.appendChild(childrenStringElement);
+    	}
+
+    if (children != "") {
+    	childrenStringElement.setAttribute("class", "lastLine");
+    } else if (cityStateZip != "") {
+    	cityStateZipElement.setAttribute("class", "lastLine");
+    } else if (line3 != "") {
+    	line3Element.setAttribute("class", "lastLine");
+    } else if (line2 != "") {
+    	line2Element.setAttribute("class", "lastLine");
+    } else if (street != "") {
+    	streetElement.setAttribute("class", "lastLine");
+    } else if (email != "") {
     	emailElement.setAttribute("class", "lastLine");
     } else if (phone != "") {
     	phoneElement.setAttribute("class", "lastLine");
@@ -75,7 +223,7 @@ function addRow(name, phone, email) {
 
     tabBody.appendChild(row);
 
-	}
+}
 
 function addRowHandlers() {
 
@@ -95,6 +243,7 @@ function addRowHandlers() {
 
         	var storedFamilies = JSON.parse(localStorage.getItem("families"));
         	var family = storedFamilies[position-1];
+        	console.log(family.key);
         	console.log(family.name);
         	console.log(family.phone);
         	console.log(family.email);

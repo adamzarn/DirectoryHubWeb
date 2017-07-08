@@ -10,11 +10,14 @@ var config = {
 
 firebase.initializeApp(config);
 
+var storage = firebase.storage();
+
 var title = document.getElementById('title');
 var ref = firebase.database().ref("Churches").orderByKey();
 
 ref.once("value").then(function(snapshot) {
   var churches = [];
+  var position = 0;
   snapshot.forEach(function(childSnapshot) {
 
     var church = {
@@ -24,8 +27,9 @@ ref.once("value").then(function(snapshot) {
   	 adminPassword: childSnapshot.child('adminPassword').val()
     };
 
-    addRow(church.name, church.loc);
+    addRow(church.name, church.loc, position);
     churches.push(church);
+    position++;
   })
 
   localStorage.setItem("churches", JSON.stringify(churches));
@@ -36,24 +40,42 @@ ref.once("value").then(function(snapshot) {
 
 });
 
-function addRow(name, location) {
+function addRow(name, location, position) {
 
   if (!document.getElementsByTagName) return;
 
     tabBody=document.getElementsByTagName("tbody").item(0);
 
     row=document.createElement("tr");
-    nameCell = document.createElement("td");
-    locationCell = document.createElement("td");
 
-    nameNode=document.createTextNode(name);
-    locationNode=document.createTextNode(location);
 
-    nameCell.appendChild(nameNode);
-    locationCell.appendChild(locationNode);
+    var pathReference = storage.ref(name + ".jpg");
+    imageCell = document.createElement("td");
+    imageCell.setAttribute("class", "imageCell");
+    imageElement = document.createElement("img");
+    imageElement.setAttribute("id", "imageElement" + position);
+      pathReference.getDownloadURL().then(function(url) {
+        document.getElementById("imageElement" + position).src = url;
+      }).catch(function(error) {
+        console.log(error);
+      });
+    imageCell.appendChild(imageElement);
 
-    row.appendChild(nameCell);
-    row.appendChild(locationCell);
+    textCell = document.createElement("td");
+    textCell.setAttribute("class", "cell");
+      nameElement = document.createElement("p");
+      nameElement.setAttribute("class", "nameHeader");
+      nameNode = document.createTextNode(name);
+      nameElement.appendChild(nameNode);
+      textCell.appendChild(nameElement);
+
+      locElement = document.createElement("p");
+      locNode = document.createTextNode(location);
+      locElement.appendChild(locNode);
+      textCell.appendChild(locElement);
+
+    row.appendChild(imageCell);
+    row.appendChild(textCell);
 
     tabBody.appendChild(row);
 
@@ -70,9 +92,10 @@ function addRowHandlers() {
     var createClickHandler = function(row) {
       return function() {
 
-        var cell = row.getElementsByTagName("td")[0];
+        var cell = row.getElementsByTagName("td")[1];
         var position = row.rowIndex;
-        var name = cell.innerHTML;
+        console.log("Position: "+position);
+        var name = cell.getElementsByTagName("p")[0].innerText;
         var modal = document.getElementById('myModal');
 			  var span = document.getElementsByClassName("close")[0];
 			  var passwordField = document.getElementById('passwordField');
@@ -106,12 +129,13 @@ function addRowHandlers() {
   			submitButton.onclick = function() {
 
   				var storedChurches = JSON.parse(localStorage.getItem("churches"));
-  				var church = storedChurches[position-1];
+  				var church = storedChurches[position];
   				var passwordField = document.getElementById('passwordField');
   				var verification = document.getElementById('verification');
 
   				if (church.password == passwordField.value) {
-  					verification.innerText = "Correct Password";
+  					verification.innerText = "";
+            localStorage.setItem('church', church.name);
             window.location.href = "directory.html";
   				} else {
   					verification.innerText = "Incorrect Password. Try again.";
