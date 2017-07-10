@@ -14,65 +14,53 @@ var church = localStorage.getItem('church');
 var switchChurchesButton = document.getElementById("switchChurchesButton");
 
 switchChurchesButton.onclick = function() {
+  localStorage.setItem('families', 'null')
 	window.location.href = "index.html";
+}
+
+var addFamilyButton = document.getElementById("addFamilyButton");
+
+addFamilyButton.onclick = function() {
+  var currentFamily = {
+    key: "",
+    name: "",
+    phone: "",
+    email: "",
+    street: "",
+    line2: "",
+    line3: "",
+    city: "",
+    state: "IL",
+    zip: "",
+    people: []
+  };
+
+  localStorage.setItem("currentFamily", JSON.stringify(currentFamily));
+  window.location.href = "editFamily.html"
+
 }
 
 if (church == null) {
 	window.location.href = "index.html"
 }
 
-var ref = firebase.database().ref(church + "/Directory");
-
-var churchName = document.getElementById('churchName');
-churchName.innerHTML = church;
-
-ref.once("value").then(function(snapshot) {
-  var families = [];
-  snapshot.forEach(function(family) {
-
-  	var people = [];
-  	family.child('People').forEach(function(person) {
-    	var newPerson = {
-    		name: person.child('name').val(), 
-    		type: person.child('type').val(), 
-    		phone: person.child('phone').val(),
-    		email: person.child('email').val(), 
-    		birthOrder: person.child('birthOrder').val(), 
-    	};
-    	people.push(newPerson);	
-    	console.log(newPerson);
-    })
-
-    var newFamily = {
-     key: family.key,
-  	 name: family.child('name').val(),
-  	 phone: family.child('phone').val(),
-  	 email: family.child('email').val(),
-  	 street: family.child('Address').child('street').val(),
-  	 line2: family.child('Address').child('line2').val(),
-  	 line3: family.child('Address').child('line3').val(),
-  	 city: family.child('Address').child('city').val(),
-  	 state: family.child('Address').child('state').val(),
-  	 zip: family.child('Address').child('zip').val(),
-  	 people: people
-    };
-
-    var cityStateZip = "";
-    if (newFamily.city != "") {
-    	cityStateZip = newFamily.city + ", " + newFamily.state + " " + newFamily.zip;
-	}
-
-    addRow(family.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, cityStateZip, newFamily.people);
-    families.push(newFamily);
-  })
-
-  localStorage.setItem("families", JSON.stringify(families));
-
-  addRowHandlers();
-  var loader = document.getElementById('loader');
-  loader.style.display = "none"
-
-});
+var families = JSON.parse(localStorage.getItem("families"));
+if (families == null) {
+    getDirectory()
+} else {
+    var churchName = document.getElementById('churchName');
+    churchName.innerHTML = localStorage.getItem('church');
+    families.forEach(function(family) {
+        var cityStateZip = "";
+        if (family.city != "") {
+            cityStateZip = family.city + ", " + family.state + " " + family.zip;
+        }
+        addRow(family.key, family.name, family.phone, family.email, family.street, family.line2, family.line3, cityStateZip, family.people);
+    });
+    addRowHandlers();
+    var loader = document.getElementById('loader');
+    loader.style.display = "none"
+}
 
 function header(name, people) {
 	var husband = "";
@@ -250,4 +238,60 @@ function addRowHandlers() {
   	};
   	currentRow.onclick = createClickHandler(currentRow);
   }
+}
+
+function getDirectory() {
+
+  var ref = firebase.database().ref(church + "/Directory");
+
+  var churchName = document.getElementById('churchName');
+  churchName.innerHTML = church;
+
+    ref.once("value").then(function(snapshot) {
+        var families = [];
+        snapshot.forEach(function(family) {
+
+            var people = [];
+            family.child('People').forEach(function(person) {
+                var newPerson = {
+                  name: person.child('name').val(), 
+                  type: person.child('type').val(), 
+                  phone: person.child('phone').val(),
+                  email: person.child('email').val(), 
+                  birthOrder: person.child('birthOrder').val(), 
+                };
+                people.push(newPerson); 
+            })
+
+            var newFamily = {
+                key: family.key,
+                name: family.child('name').val(),
+                phone: family.child('phone').val(),
+                email: family.child('email').val(),
+                street: family.child('Address').child('street').val(),
+                line2: family.child('Address').child('line2').val(),
+                line3: family.child('Address').child('line3').val(),
+                city: family.child('Address').child('city').val(),
+                state: family.child('Address').child('state').val(),
+                zip: family.child('Address').child('zip').val(),
+                people: people
+            };
+
+            var cityStateZip = "";
+            if (newFamily.city != "") {
+                cityStateZip = newFamily.city + ", " + newFamily.state + " " + newFamily.zip;
+            }
+
+            addRow(family.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, cityStateZip, newFamily.people);
+            families.push(newFamily);
+  })
+
+  localStorage.setItem("families", JSON.stringify(families));
+
+  addRowHandlers();
+  var loader = document.getElementById('loader');
+  loader.style.display = "none"
+
+});
+
 }

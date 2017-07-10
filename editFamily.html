@@ -7,6 +7,8 @@
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
+		<script src="jquery-3.2.1.js"></script>
+
 	</head>
 
 	<body id="editFamilyBody">
@@ -18,6 +20,23 @@
 
   		<div id="editFamilyDetails" class="editFamilyDetails">
   		</div>
+
+  		<div id="personModal" class="personModal">
+  			<div class="personModalContent">
+  				<label class="center">Add Person</label>
+    			<input type="text" class="edit" placeholder="First Name" id="addPersonName"></input>
+    			<div class="twoBoxDiv">
+    				<select class="personType" id="addPersonType"></select>
+    				<select class="birthOrder" id="addPersonBirthOrder"></select>
+    			</div>
+    			<input type="text" class="edit" placeholder="Phone" name="phone_num" maxlength="12" id="addPersonPhone"></input>
+    			<input type="text" class="edit" placeholder="Email" id="addPersonEmail"></input>
+    			<div class="twoButtonDiv">
+    				<button type="cancel" id="cancelPersonButton" class="leftButton">Cancel</button>
+    				<button type="submit" id="submitPersonButton" class = "rightButton">Submit</button>
+    			</div>
+  			</div>
+		</div>
 
 		<script type="text/javascript" src="editFamily.js"></script>
 	

@@ -10,6 +10,8 @@ var config = {
 
 firebase.initializeApp(config);
 
+localStorage.setItem('families', 'null')
+
 var storage = firebase.storage();
 
 var title = document.getElementById('title');

@@ -1,6 +1,14 @@
 #editFamilyBody {
     background-color: #efefef;
-    min-width: 300px;
+    min-width: 400px;
+}
+
+#directory {
+    min-width: 500px;
+}
+
+.page {
+    min-width: 400px;
 }
 
 header {
@@ -10,7 +18,7 @@ header {
 }
 
 header h2 {
-    padding: 10px 0px 10px 10px;
+    padding: 10px 0px 0px 10px;
     display: inline-block;
 }
 
@@ -31,20 +39,68 @@ h2.editFamilyName {
     background-color: white;
     border: none;
     color: #dc6f68;
-    margin-top: 33px;
-    margin-right: 10px;
     text-align: center;
     text-decoration: none;
-    font-size: 16px;
     float: right;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
 }
 
+#switchChurchesButton {
+    margin-right: 10px;
+    margin-top: 33px;
+    font-size: 16px;
+}
+
+#addFamilyButton {
+    margin-right: 10px;
+    margin-top: -4px;
+    font-size: 12px;
+}
+
+#familyName {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#editFamilyButton {
+    margin-right: 10px;
+    margin-top: 33px;
+    font-size: 16px;
+}
+
+#editFamilyName {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#submitChangesButton {
+    margin-right: 10px;
+    margin-top: 33px;
+    font-size: 16px;
+}
+
+#deleteFamilyButton {
+    background-color: #dc6f68;
+    color: white;
+    margin-top: 16px;
+    margin-right: 10px;
+    float: right;
+    font-size: 16px;
+}
+
+#addPersonButton {
+    background-color: #dc6f68;
+    color: white;
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 16px;
+    float: left;
+}
+
 header h4 {
-    margin-top: -10px;
-    padding: 0px 0px 10px 10px;
+    display: inline-block;
 }
 
 table {
@@ -54,7 +110,7 @@ table {
 }
 
 table.directoryTable {
-    margin-top: -10px;
+    margin-top: 0px;
 }
 
 th, td {
@@ -86,7 +142,8 @@ img {
 }
 
 .churchName {
-    margin-bottom: 10px;
+    margin: -30px 0px 10px 10px;
+    width: 400px;
 }
 
 .churchHeader {
@@ -104,6 +161,11 @@ img {
 
 .line {
     padding-left: 10px;
+    margin-bottom: -3px;
+}
+
+.personLine {
+    padding-left: 14px;
     margin-bottom: -3px;
 }
 
@@ -175,6 +237,29 @@ img {
     min-width: 300px;
 }
 
+.personModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.personModalContent {
+    background-color: #fefefe;
+    margin: 12% auto;
+    border: 1px solid #888;
+    width: 25%;
+    min-width: 300px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 .close {
     color: #aaa;
     float: right;
@@ -206,12 +291,12 @@ img {
 .detailDiv {
     background: #efefef;
     width: 100% - 20px;
-    margin: 0px 10px 20px 10px;
+    margin: 0px 10px 10px 10px;
     border-radius: 4px;
 }
 
 .boldHeader {
-    margin: 10px 0px 0px 10px;
+    margin: 20px 0px 0px 10px;
     font-weight: bold;
 }
 
@@ -221,7 +306,7 @@ img {
 
 .cityStateZip {
     margin-left: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     width: calc(100% - 20px);
 }
 
@@ -235,6 +320,7 @@ img {
     width: 32%;
     margin-left: 2%;
     padding-left: 4px;
+    height: 26px;
 }
 
 #zip {
@@ -252,6 +338,30 @@ img {
     margin-left: 10px;
     width: calc(100% - 20px);
     margin-bottom: 4px;
+}
+
+.twoButtonDiv {
+    height: 26px;
+    margin-left: 10px;
+    width: calc(100% - 20px);
+    margin-bottom: 0px;
+}
+
+.leftButton {
+    height: 26px;
+    width: 49%;
+    float: left;
+}
+
+.rightButton {
+    height: 26px;
+    width: 49%;
+    float: right;
+}
+
+.center {
+    width: 100%;
+    text-align: center;
 }
 
 ::-webkit-input-placeholder { color: #e5e5e5; }
