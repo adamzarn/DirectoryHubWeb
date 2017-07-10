@@ -239,14 +239,12 @@ function addRowHandlers() {
         	var cell = row.getElementsByTagName("td")[0];
         	var position = row.rowIndex;
         	var name = cell.innerHTML;
-        	console.log(position);
 
         	var storedFamilies = JSON.parse(localStorage.getItem("families"));
-        	var family = storedFamilies[position-1];
-        	console.log(family.key);
-        	console.log(family.name);
-        	console.log(family.phone);
-        	console.log(family.email);
+        	var family = storedFamilies[position];
+
+        	localStorage.setItem("currentFamily", JSON.stringify(family));
+        	window.location.href = "family.html";
 
        	};
   	};

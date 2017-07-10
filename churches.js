@@ -48,7 +48,6 @@ function addRow(name, location, position) {
 
     row=document.createElement("tr");
 
-
     var pathReference = storage.ref(name + ".jpg");
     imageCell = document.createElement("td");
     imageCell.setAttribute("class", "imageCell");
@@ -64,12 +63,13 @@ function addRow(name, location, position) {
     textCell = document.createElement("td");
     textCell.setAttribute("class", "cell");
       nameElement = document.createElement("p");
-      nameElement.setAttribute("class", "nameHeader");
+      nameElement.setAttribute("class", "churchHeader");
       nameNode = document.createTextNode(name);
       nameElement.appendChild(nameNode);
       textCell.appendChild(nameElement);
 
       locElement = document.createElement("p");
+      locElement.setAttribute("class", "loc");
       locNode = document.createTextNode(location);
       locElement.appendChild(locNode);
       textCell.appendChild(locElement);
@@ -94,7 +94,6 @@ function addRowHandlers() {
 
         var cell = row.getElementsByTagName("td")[1];
         var position = row.rowIndex;
-        console.log("Position: "+position);
         var name = cell.getElementsByTagName("p")[0].innerText;
         var modal = document.getElementById('myModal');
 			  var span = document.getElementsByClassName("close")[0];
@@ -102,7 +101,7 @@ function addRowHandlers() {
 			  passwordField.placeholder = "Password";
         var submitButton = document.getElementById('submitButton');
 				var passwordPrompt = document.getElementById('passwordPrompt');
-				passwordPrompt.innerHTML = "To access the directory, enter the password for " + name + ":";
+				passwordPrompt.innerHTML = name + ":";
 
         modal.style.display = "block";
 
