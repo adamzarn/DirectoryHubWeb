@@ -119,7 +119,7 @@ function addRowHandlers() {
 			  passwordField.placeholder = "Password";
         var submitButton = document.getElementById('submitButton');
 				var passwordPrompt = document.getElementById('passwordPrompt');
-				passwordPrompt.innerHTML = name + ":";
+				passwordPrompt.innerHTML = "Please enter the password to access the directory for " + name + ":";
         var verification = document.getElementById('verification');
 
         modal.style.display = "block";

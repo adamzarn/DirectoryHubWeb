@@ -290,6 +290,18 @@ img {
     min-width: 200px;
 }
 
+.loading-modal-content {
+    background-color: #fefefe;
+    margin: 20% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 25%;
+    min-width: 300px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+}
+
 .personModal {
     display: none;
     position: fixed;

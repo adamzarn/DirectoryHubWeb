@@ -55,7 +55,7 @@ addPersonButton.onclick = function() {
     addPersonPhone.value = "";
     addPersonEmail.value = "";
     addPersonBirthOrder = "0";
-    addPersonBirthOrder.disabled = true;
+    document.getElementById("addPersonBirthOrder").disabled = true;
 
 	var modal = document.getElementById("personModal");
 	modal.style.display = "block";
