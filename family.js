@@ -1,5 +1,19 @@
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyDS6zch98V15uvpqsbKqnRrMnv3Ha_vMcA",
+  authDomain: "valleybrookcommunitychur-77604.firebaseapp.com",
+  databaseURL: "https://valleybrookcommunitychur-77604.firebaseio.com",
+  projectId: "valleybrookcommunitychur-77604",
+  storageBucket: "valleybrookcommunitychur-77604.appspot.com",
+  messagingSenderId: "301967649981"
+};
+
+firebase.initializeApp(config);
+
 var currentFamily = JSON.parse(localStorage.getItem("currentFamily"));
-console.log(currentFamily);
+var church = JSON.parse(localStorage.getItem("church"));
+
+var editingFamily = true;
 
 var familyName = document.getElementById("familyName");
 familyName.innerText = getFamilyName(currentFamily);
@@ -11,7 +25,109 @@ addPeople(currentFamily);
 
 var editFamilyButton = document.getElementById("editFamilyButton");
 editFamilyButton.onclick = function() {
-	window.location.href = "editFamily.html";
+
+	var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+    var passwordField = document.getElementById('passwordField');
+    passwordField.placeholder = "Password";
+    var submitButton = document.getElementById('submitButton');
+    var passwordPrompt = document.getElementById('passwordPrompt');
+    passwordPrompt.innerHTML = "You must enter your church's Administrator Password to edit a family:";
+    var verification = document.getElementById('verification');
+
+    modal.style.display = "block";
+
+    span.onclick = function() {
+
+        modal.style.display = "none";
+        passwordField.value = "";
+        verification.innerText = "";
+
+    }
+
+    window.onclick = function(event) {
+
+      if (event.target == modal) {
+          modal.style.display = "none";
+          passwordField.value = "";
+          verification.innerText = "";
+      }
+
+    }
+
+    submitButton.onclick = function() {
+
+      if (church.adminPassword == passwordField.value) {
+        	verification.innerText = "";
+          	window.location.href = "editFamily.html";
+      } else {
+        verification.innerText = "Incorrect Password.";
+      }
+
+    }
+}
+
+var deleteFamilyButton = document.getElementById("deleteFamilyButton");
+
+deleteFamilyButton.onclick = function() {
+	
+	var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+    var passwordField = document.getElementById('passwordField');
+    passwordField.placeholder = "Password";
+    var submitButton = document.getElementById('submitButton');
+    var passwordPrompt = document.getElementById('passwordPrompt');
+    passwordPrompt.innerHTML = "You must enter your church's Administrator Password to delete a family:";
+
+    modal.style.display = "block";
+
+    span.onclick = function() {
+
+        modal.style.display = "none";
+        var passwordField = document.getElementById('passwordField');
+        passwordField.value = "";
+        verification.innerText = "";
+
+    }
+
+    window.onclick = function(event) {
+
+      if (event.target == modal) {
+          modal.style.display = "none";
+          var passwordField = document.getElementById('passwordField');
+          passwordField.value = "";
+          verification.innerText = "";
+      }
+
+    }
+
+    submitButton.onclick = function() {
+
+    var promptModal = document.getElementById('myModal');
+	promptModal.style.display = "none"; 
+
+	var modal = document.getElementById('loadingModal');
+	modal.style.display = "block";
+
+      var passwordField = document.getElementById('passwordField');
+      var verification = document.getElementById('verification');
+
+      if (church.adminPassword == passwordField.value) {
+        	verification.innerText = "";
+          	var ref = firebase.database().ref(church.name + "/Directory/" + currentFamily.key);
+
+			ref.remove().then(function() {
+	  			localStorage.setItem("families", "null");
+	  			window.location.href = "directory.html";
+			}).catch(function(error) {
+	  			alert(error);
+			});
+
+      } else {
+        verification.innerText = "Incorrect Password. Try again.";
+      }
+
+    }
 }
 
 function getFamilyName(family) {

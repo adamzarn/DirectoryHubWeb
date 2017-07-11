@@ -3,6 +3,10 @@
     min-width: 400px;
 }
 
+#familyBody {
+    min-width: 450px;
+}
+
 #directory {
     min-width: 500px;
 }
@@ -86,6 +90,7 @@ h2.editFamilyName {
     color: white;
     margin-top: 16px;
     margin-right: 10px;
+    margin-bottom: 16px;
     float: right;
     font-size: 16px;
 }
@@ -98,6 +103,38 @@ h2.editFamilyName {
     font-size: 16px;
     float: left;
 }
+
+.editButton {
+    width: 41px;
+    background-color: #dc6f68;
+    color: white;
+    font-size: 10px;
+    border: none;
+    margin-top: -12px;
+    clear: both;
+    margin-right: 10px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    float: right;
+}
+
+.deleteButton {
+    width: 41px;
+    background-color: #dc6f68;
+    color: white;
+    font-size: 10px;
+    border: none;
+    margin-top: 5px;
+    clear: both;
+    margin-right: 10px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    float: right;
+}
+
+
 
 header h4 {
     display: inline-block;
@@ -165,7 +202,7 @@ img {
 }
 
 .personLine {
-    padding-left: 14px;
+    padding-left: 4px;
     margin-bottom: -3px;
 }
 
@@ -183,6 +220,12 @@ img {
     margin: 0px 10px 4px 10px;
     width: calc(100% - 20px);
     padding-left: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #efefef;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
 .personType {
@@ -190,6 +233,8 @@ img {
     width: 49%;
     float: left;
     padding-left: 4px;
+    border: 1px;
+    border-color: #efefef;
 }
 
 .birthOrder {
@@ -197,6 +242,8 @@ img {
     width: 49%;
     float: right;
     padding-left: 4px;
+    border: 1px;
+    border-color: #efefef;
 }
 
 .loader {
@@ -235,6 +282,12 @@ img {
     border: 1px solid #888;
     width: 25%;
     min-width: 300px;
+    height: 176px;
+}
+
+#loadingModalContent {
+    width: 200px;
+    min-width: 200px;
 }
 
 .personModal {
@@ -269,7 +322,13 @@ img {
 }
 
 #passwordField {
-    border-radius: 5px;
+    padding-left: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #efefef;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     width: 100%;
 }
 
@@ -278,7 +337,20 @@ img {
 }
 
 .submitButton {
+    background-color: #dc6f68;
+    color: white;
     margin-top: 15px;
+    width: 60px;
+    float: right;
+    border: none;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#verification {
+    margin-top: 20px;
+    font-size: 12px;
 }
 
 .close:hover,
@@ -296,8 +368,12 @@ img {
 }
 
 .boldHeader {
-    margin: 20px 0px 0px 10px;
+    margin: 10px 0px 0px 10px;
     font-weight: bold;
+}
+
+#People {
+    margin-top: 25px;
 }
 
 .editFamilyDetails {
@@ -314,23 +390,41 @@ img {
     width: 32%;
     float: left;
     padding-left: 4px;
+    border: none;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
 #state {
     width: 32%;
     margin-left: 2%;
     padding-left: 4px;
-    height: 26px;
+    height: 22px;
+    margin-top: -2%;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
 #zip {
     width: 32%;
     margin-left: 2%;
     padding-left: 4px;
+    border: none;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
 .personDiv {
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color: white;
     margin-bottom: 20px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
 .twoBoxDiv {
@@ -362,6 +456,16 @@ img {
 .center {
     width: 100%;
     text-align: center;
+}
+
+#search {
+    width: 100%;
+    height: 30px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: none;
+    border-right: none;
+    padding-left: 10px;
 }
 
 ::-webkit-input-placeholder { color: #e5e5e5; }

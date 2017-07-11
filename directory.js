@@ -10,37 +10,100 @@ var config = {
 
 firebase.initializeApp(config);
 
-var church = localStorage.getItem('church');
+var church = JSON.parse(localStorage.getItem("church"));
+console.log(church);
 var switchChurchesButton = document.getElementById("switchChurchesButton");
 
 switchChurchesButton.onclick = function() {
   localStorage.setItem('families', 'null')
+  var search = document.getElementById("search");
+  search.value = "";
 	window.location.href = "index.html";
+}
+
+function search() {
+    var search = document.getElementById("search");
+    filter = search.value.toLowerCase();
+    table = document.getElementById("directoryTable");
+    rows = table.getElementsByTagName("tr");
+    for (i = 0; i < rows.length; i++) {
+        var cell = rows[i].getElementsByTagName("td")[0];
+        var header = cell.getElementsByTagName("p")[0];
+        if (header.innerText.toLowerCase().indexOf(filter) > -1) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
 }
 
 var addFamilyButton = document.getElementById("addFamilyButton");
 
 addFamilyButton.onclick = function() {
-  var currentFamily = {
-    key: "",
-    name: "",
-    phone: "",
-    email: "",
-    street: "",
-    line2: "",
-    line3: "",
-    city: "",
-    state: "IL",
-    zip: "",
-    people: []
-  };
 
-  localStorage.setItem("currentFamily", JSON.stringify(currentFamily));
-  window.location.href = "editFamily.html"
+    var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName("close")[0];
+    var passwordField = document.getElementById('passwordField');
+    passwordField.placeholder = "Password";
+    var submitButton = document.getElementById('submitButton');
+    var passwordPrompt = document.getElementById('passwordPrompt');
+    passwordPrompt.innerHTML = "You must enter your church's Administrator Password to add a family:";
+    var verification = document.getElementById('verification');
+
+    modal.style.display = "block";
+
+    span.onclick = function() {
+
+        modal.style.display = "none";
+        var passwordField = document.getElementById('passwordField');
+        passwordField.value = "";
+        verification.innerText = "";
+
+    }
+
+    window.onclick = function(event) {
+
+      if (event.target == modal) {
+          modal.style.display = "none";
+          passwordField.value = "";
+          verification.innerText = "";
+      }
+
+    }
+
+    submitButton.onclick = function() {
+
+      if (church.adminPassword == passwordField.value) {
+        verification.innerText = "";
+          var currentFamily = {
+            key: "",
+            name: "",
+            phone: "",
+            email: "",
+            street: "",
+            line2: "",
+            line3: "",
+            city: "",
+            state: "IL",
+            zip: "",
+            people: []
+          };
+
+          localStorage.setItem("currentFamily", JSON.stringify(currentFamily));
+          var search = document.getElementById("search");
+          search.value = "";
+          window.location.href = "editFamily.html"
+      } else {
+        verification.innerText = "Incorrect Password.";
+      }
+
+    }
 
 }
 
 if (church == null) {
+  var search = document.getElementById("search");
+  search.value = "";
 	window.location.href = "index.html"
 }
 
@@ -49,13 +112,9 @@ if (families == null) {
     getDirectory()
 } else {
     var churchName = document.getElementById('churchName');
-    churchName.innerHTML = localStorage.getItem('church');
+    churchName.innerHTML = church.name;
     families.forEach(function(family) {
-        var cityStateZip = "";
-        if (family.city != "") {
-            cityStateZip = family.city + ", " + family.state + " " + family.zip;
-        }
-        addRow(family.key, family.name, family.phone, family.email, family.street, family.line2, family.line3, cityStateZip, family.people);
+        addRow(family.key, family.name, family.phone, family.email, family.street, family.line2, family.line3, family.city, family.state, family.zip, family.people);
     });
     addRowHandlers();
     var loader = document.getElementById('loader');
@@ -83,7 +142,7 @@ function header(name, people) {
 }
 
 function childrenString(people) {
-	people.sort(compare);
+	people.sort(compareBirthOrders);
 	children = [];
 	people.forEach(function(person) {
 		if (person.type == "Child") {
@@ -110,7 +169,7 @@ function childrenString(people) {
 	return "";
 }
 
-function compare(a, b) {
+function compareBirthOrders(a, b) {
   if (a.birthOrder < b.birthOrder)
     return -1;
   if (a.birthOrder > b.birthOrder)
@@ -118,7 +177,15 @@ function compare(a, b) {
   return 0;
 }
 
-function addRow(key, name, phone, email, street, line2, line3, cityStateZip, people) {
+function compareLastNames(a, b) {
+  if (a.name < b.name)
+    return -1;
+  if (a.name > b.name)
+    return 1;
+  return 0;
+}
+
+function addRow(key, name, phone, email, street, line2, line3, city, state, zip, people) {
 
   if (!document.getElementsByTagName) return;
 
@@ -173,6 +240,11 @@ function addRow(key, name, phone, email, street, line2, line3, cityStateZip, peo
     		line3Element.appendChild(line3Node);
     		cell.appendChild(line3Element);
     	}
+
+      var cityStateZip = "";
+      if (city != "") {
+          cityStateZip = city + ", " + state + " " + zip;
+      }
 
     	if (cityStateZip != "") {
     		cityStateZipElement = document.createElement("p");
@@ -232,6 +304,8 @@ function addRowHandlers() {
         	var family = storedFamilies[position];
 
         	localStorage.setItem("currentFamily", JSON.stringify(family));
+          var search = document.getElementById("search");
+          search.value = "";
         	window.location.href = "family.html";
 
        	};
@@ -242,12 +316,12 @@ function addRowHandlers() {
 
 function getDirectory() {
 
-  var ref = firebase.database().ref(church + "/Directory");
+  var ref = firebase.database().ref(church.name + "/Directory");
 
   var churchName = document.getElementById('churchName');
-  churchName.innerHTML = church;
+  churchName.innerHTML = church.name;
 
-    ref.once("value").then(function(snapshot) {
+    ref.on("value", function(snapshot) {
         var families = [];
         snapshot.forEach(function(family) {
 
@@ -277,14 +351,14 @@ function getDirectory() {
                 people: people
             };
 
-            var cityStateZip = "";
-            if (newFamily.city != "") {
-                cityStateZip = newFamily.city + ", " + newFamily.state + " " + newFamily.zip;
-            }
-
-            addRow(family.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, cityStateZip, newFamily.people);
             families.push(newFamily);
   })
+
+  families.sort(compareLastNames);
+
+  families.forEach(function(newFamily) {
+    addRow(newFamily.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, newFamily.city, newFamily.state, newFamily.zip, newFamily.people);
+  });
 
   localStorage.setItem("families", JSON.stringify(families));
 

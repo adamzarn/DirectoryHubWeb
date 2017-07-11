@@ -10,7 +10,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-localStorage.setItem('families', 'null')
+localStorage.setItem("families", "null");
 
 var storage = firebase.storage();
 
@@ -41,6 +41,22 @@ ref.once("value").then(function(snapshot) {
   loader.style.display = "none"
 
 });
+
+function search() {
+    var search = document.getElementById("search");
+    filter = search.value.toLowerCase();
+    table = document.getElementById("churchesTable");
+    rows = table.getElementsByTagName("tr");
+    for (i = 0; i < rows.length; i++) {
+        var cell = rows[i].getElementsByTagName("td")[1];
+        var header = cell.getElementsByTagName("p")[0];
+        if (header.innerText.toLowerCase().indexOf(filter) > -1) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
 
 function addRow(name, location, position) {
 
@@ -104,13 +120,13 @@ function addRowHandlers() {
         var submitButton = document.getElementById('submitButton');
 				var passwordPrompt = document.getElementById('passwordPrompt');
 				passwordPrompt.innerHTML = name + ":";
+        var verification = document.getElementById('verification');
 
         modal.style.display = "block";
 
 				span.onclick = function() {
 
     			modal.style.display = "none";
-    			var passwordField = document.getElementById('passwordField');
         	passwordField.value = "";
         	verification.innerText = "";
 
@@ -120,7 +136,6 @@ function addRowHandlers() {
 
       		if (event.target == modal) {
           	modal.style.display = "none";
-          	var passwordField = document.getElementById('passwordField');
           	passwordField.value = "";
           	verification.innerText = "";
       		}
@@ -131,15 +146,16 @@ function addRowHandlers() {
 
   				var storedChurches = JSON.parse(localStorage.getItem("churches"));
   				var church = storedChurches[position];
-  				var passwordField = document.getElementById('passwordField');
-  				var verification = document.getElementById('verification');
 
   				if (church.password == passwordField.value) {
   					verification.innerText = "";
-            localStorage.setItem('church', church.name);
+
+            localStorage.setItem("church", JSON.stringify(church));
+            var search = document.getElementById("search");
+            search.value = "";
             window.location.href = "directory.html";
   				} else {
-  					verification.innerText = "Incorrect Password. Try again.";
+  					verification.innerText = "Incorrect Password.";
   				}
 
   			}
