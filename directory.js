@@ -10,20 +10,19 @@ var config = {
 
 firebase.initializeApp(config);
 
-var church = JSON.parse(localStorage.getItem("church"));
-console.log(church);
-var switchChurchesButton = document.getElementById("switchChurchesButton");
+var entries = [];
+var group = JSON.parse(localStorage.getItem("group"));
+var myGroupsButton = document.getElementById("myGroupsButton");
 
-switchChurchesButton.onclick = function() {
-  localStorage.setItem('families', 'null')
-  var search = document.getElementById("search");
-  search.value = "";
-	window.location.href = "index.html";
+myGroupsButton.onclick = function() {
+  var searchBox = document.getElementById("searchBox");
+  searchBox.value = "";
+	window.location.href = "myGroups.html";
 }
 
 function search() {
-    var search = document.getElementById("search");
-    filter = search.value.toLowerCase();
+    var searchBox = document.getElementById("searchBox");
+    filter = searchBox.value.toLowerCase();
     table = document.getElementById("directoryTable");
     rows = table.getElementsByTagName("tr");
     for (i = 0; i < rows.length; i++) {
@@ -37,89 +36,21 @@ function search() {
     }
 }
 
-var addFamilyButton = document.getElementById("addFamilyButton");
+var addEntryButton = document.getElementById("addEntryButton");
 
-addFamilyButton.onclick = function() {
+addEntryButton.onclick = function() {
 
-    var modal = document.getElementById('myModal');
-    var span = document.getElementsByClassName("close")[0];
-    var passwordField = document.getElementById('passwordField');
-    passwordField.placeholder = "Password";
-    var submitButton = document.getElementById('submitButton');
-    var passwordPrompt = document.getElementById('passwordPrompt');
-    passwordPrompt.innerHTML = "You must enter your church's Administrator Password to add a family:";
-    var verification = document.getElementById('verification');
-
-    modal.style.display = "block";
-
-    span.onclick = function() {
-
-        modal.style.display = "none";
-        var passwordField = document.getElementById('passwordField');
-        passwordField.value = "";
-        verification.innerText = "";
-
-    }
-
-    window.onclick = function(event) {
-
-      if (event.target == modal) {
-          modal.style.display = "none";
-          passwordField.value = "";
-          verification.innerText = "";
-      }
-
-    }
-
-    submitButton.onclick = function() {
-
-      if (church.adminPassword == passwordField.value) {
-        verification.innerText = "";
-          var currentFamily = {
-            key: "",
-            name: "",
-            phone: "",
-            email: "",
-            street: "",
-            line2: "",
-            line3: "",
-            city: "",
-            state: "IL",
-            zip: "",
-            people: []
-          };
-
-          localStorage.setItem("currentFamily", JSON.stringify(currentFamily));
-          var search = document.getElementById("search");
-          search.value = "";
-          window.location.href = "editFamily.html"
-      } else {
-        verification.innerText = "Incorrect Password.";
-      }
-
-    }
+    window.location.href("editEntry.html")
 
 }
 
-if (church == null) {
-  var search = document.getElementById("search");
-  search.value = "";
+if (group == null) {
+  var searchBox = document.getElementById("searchBox");
+  searchBox.value = "";
 	window.location.href = "index.html"
 }
 
-var families = JSON.parse(localStorage.getItem("families"));
-if (families == null) {
-    getDirectory()
-} else {
-    var churchName = document.getElementById('churchName');
-    churchName.innerHTML = church.name;
-    families.forEach(function(family) {
-        addRow(family.key, family.name, family.phone, family.email, family.street, family.line2, family.line3, family.city, family.state, family.zip, family.people);
-    });
-    addRowHandlers();
-    var loader = document.getElementById('loader');
-    loader.style.display = "none"
-}
+getDirectory();
 
 function header(name, people) {
 	var husband = "";
@@ -300,13 +231,13 @@ function addRowHandlers() {
         	var position = row.rowIndex;
         	var name = cell.innerHTML;
 
-        	var storedFamilies = JSON.parse(localStorage.getItem("families"));
-        	var family = storedFamilies[position];
+          var entry = entries[position];
+          console.log(entry);
+        	localStorage.setItem("currentEntry", JSON.stringify(entry));
 
-        	localStorage.setItem("currentFamily", JSON.stringify(family));
-          var search = document.getElementById("search");
-          search.value = "";
-        	window.location.href = "family.html";
+          var searchBox = document.getElementById("searchBox");
+          searchBox.value = "";
+        	window.location.href = "entry.html";
 
        	};
   	};
@@ -316,17 +247,17 @@ function addRowHandlers() {
 
 function getDirectory() {
 
-  var ref = firebase.database().ref(church.name + "/Directory");
+  var ref = firebase.database().ref("Directories").child(group.uid);
 
-  var churchName = document.getElementById('churchName');
-  churchName.innerHTML = church.name;
+  var groupName = document.getElementById('groupName');
+  groupName.innerHTML = group.name;
 
     ref.on("value", function(snapshot) {
-        var families = [];
-        snapshot.forEach(function(family) {
+        entries = [];
+        snapshot.forEach(function(entry) {
 
             var people = [];
-            family.child('People').forEach(function(person) {
+            entry.child('People').forEach(function(person) {
                 var newPerson = {
                   name: person.child('name').val(), 
                   type: person.child('type').val(), 
@@ -337,30 +268,28 @@ function getDirectory() {
                 people.push(newPerson); 
             })
 
-            var newFamily = {
-                key: family.key,
-                name: family.child('name').val(),
-                phone: family.child('phone').val(),
-                email: family.child('email').val(),
-                street: family.child('Address').child('street').val(),
-                line2: family.child('Address').child('line2').val(),
-                line3: family.child('Address').child('line3').val(),
-                city: family.child('Address').child('city').val(),
-                state: family.child('Address').child('state').val(),
-                zip: family.child('Address').child('zip').val(),
+            var newEntry = {
+                key: entry.key,
+                name: entry.child('name').val(),
+                phone: entry.child('phone').val(),
+                email: entry.child('email').val(),
+                street: entry.child('Address').child('street').val(),
+                line2: entry.child('Address').child('line2').val(),
+                line3: entry.child('Address').child('line3').val(),
+                city: entry.child('Address').child('city').val(),
+                state: entry.child('Address').child('state').val(),
+                zip: entry.child('Address').child('zip').val(),
                 people: people
             };
 
-            families.push(newFamily);
+            entries.push(newEntry);
   })
 
-  families.sort(compareLastNames);
+  entries.sort(compareLastNames);
 
-  families.forEach(function(newFamily) {
-    addRow(newFamily.key, newFamily.name, newFamily.phone, newFamily.email, newFamily.street, newFamily.line2, newFamily.line3, newFamily.city, newFamily.state, newFamily.zip, newFamily.people);
+  entries.forEach(function(newEntry) {
+    addRow(newEntry.key, newEntry.name, newEntry.phone, newEntry.email, newEntry.street, newEntry.line2, newEntry.line3, newEntry.city, newEntry.state, newEntry.zip, newEntry.people);
   });
-
-  localStorage.setItem("families", JSON.stringify(families));
 
   addRowHandlers();
   var loader = document.getElementById('loader');

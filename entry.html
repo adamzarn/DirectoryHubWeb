@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+
+	<head>
+		<title>Directory</title>
+		<link href="styles/main.css" rel="stylesheet" />
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+	</head>
+
+	<body id="entryBody" class="page">
+
+		<header>
+			<h2 id="entryName" class="entryName"></h2>
+			<button class="button" id="editEntryButton">Edit</button>
+  		</header>
+
+  		<div id="entryDetails" class="entryDetails">
+  		</div>
+
+  		<button id="deleteEntryButton" class="button">Delete</button>
+
+		<div id="loadingModal" class="modal">
+  			<div id="loadingModalContent" class="loading-modal-content">
+  				<label id="status" class="center">Deleting Entry...</label>
+    			<div id="loader" class="loader"></div>
+  			</div>
+		</div>
+
+		<script type="text/javascript" src="entry.js"></script>
+	
+	</body>
+
+</html>

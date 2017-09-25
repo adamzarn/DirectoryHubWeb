@@ -3,6 +3,7 @@
 
 	<head>
 		<title>Directory</title>
+		
 		<link href="styles/main.css" rel="stylesheet" />
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -11,26 +12,25 @@
 
 	</head>
 
-	<body id="directory">
+	<body class="page">
 
 		<header>
-			<h2>Directory</h2>
-			<button class="button" id="myGroupsButton">Back to My Groups</button>
-			<br>
-    		<h4 class="groupName" id="groupName"></h4>
-    		<button class="button" id="addEntryButton">Add Entry</button>
+    		<h2 class="group">My Groups</h2>
+    		<button class="button" id="addGroupButton">Add Group</button>
+    		<button class="button" id="logoutButton">Logout</button>
   		</header>
 
-  		<input type="search" id="searchBox" placeholder="Search by Last Name..." onkeyup="search()"></input>
+  		<input type="search" id="searchBox" placeholder="Search your groups..." onkeyup="searchMyGroups()"></input>
 
-  		<table class="directoryTable" id="directoryTable">
+  		<table id="groupsTable">
 			<tbody>
 			</tbody>
 		</table>
 
 		<div id="loader" class="loader"></div>
 
-		<script type="text/javascript" src="directory.js"></script>
+		<script src="jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="myGroups.js"></script>
 	
 	</body>
 

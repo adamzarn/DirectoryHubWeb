@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+	<head>
+		<title>Directory</title>
+		<link href="styles/main.css" rel="stylesheet" />
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<script src="jquery-3.2.1.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+	</head>
+
+	<body id="editFamilyBody">
+
+		<header>
+			<h2 id="editFamilyName" class="editFamilyName"></h2>
+			<button class="button" id="submitChangesButton">Submit Changes</button>
+  		</header>
+
+  		<div id="editFamilyDetails" class="editFamilyDetails">
+  		</div>
+
+  		<div id="personModal" class="personModal">
+  			<div class="personModalContent">
+  				<label class="center" id="addPersonLabel">Add Person</label>
+    			<input type="text" class="edit" placeholder="First Name" id="addPersonName"></input>
+    			<div class="twoBoxDiv">
+    				<select class="personType" id="addPersonType"></select>
+    				<select class="birthOrder" id="addPersonBirthOrder"></select>
+    			</div>
+    			<input type="text" class="edit" placeholder="Phone" name="phone_num" maxlength="12" id="addPersonPhone"></input>
+    			<input type="text" class="edit" placeholder="Email" id="addPersonEmail"></input>
+    			<div class="twoButtonDiv">
+    				<button type="cancel" id="cancelPersonButton" class="leftButton">Cancel</button>
+    				<button type="submit" id="submitPersonButton" class = "rightButton">Submit</button>
+    			</div>
+  			</div>
+		</div>
+
+		<div id="loadingModal" class="modal">
+  			<div id="loadingModalContent" class="loading-modal-content">
+  				<label id="status" class="center"></label>
+    			<div id="loader" class="loader"></div>
+  			</div>
+		</div>
+
+		<div id="areYouSureModal" class="modal">
+  			<div id="areYouSureModalContent" class="are-you-sure-modal-content">
+  				<p id="areYouSure" class="center"></p>
+  				<div class="twoButtonDiv">
+    				<button type="cancel" id="no" class="leftButton">Cancel</button>
+    				<button type="submit" id="yes" class="rightButton">Submit</button>
+    			</div>
+  			</div>
+		</div>
+
+		<script type="text/javascript" src="editFamily.js"></script>
+	
+	</body>
+
+</html>
