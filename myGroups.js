@@ -236,16 +236,15 @@ function addRowHandlers() {
   var rows = table.getElementsByTagName("tr");
 
   for (i = 0; i < rows.length; i++) {
+    
+    var currentRow = table.rows[i];
+    var currentDeleteButton = document.getElementById("delete" + i);
 
-  	var currentImageCell = table.rows[i].cells[0];
-    var currentTextCell = table.rows[i].cells[1];
-    var createClickHandler = function(cell) {
-      return function() {
+    var clickHandler = function(row) {
+      return function(ev) {
 
-        var cell = row.getElementsByTagName("td")[1];
-        var position = cell.parentNode.rowIndex;
-        var name = cell.getElementsByTagName("p")[0].innerText;
-
+      	ev.stopPropagation();
+        var position = row.rowIndex;
         var selectedGroup = groups[position];
 
         localStorage.setItem("group", JSON.stringify(selectedGroup));
@@ -256,12 +255,12 @@ function addRowHandlers() {
 
     };
 
-    var currentDeleteCell = table.rows[i].cells[2];
-    var deleteClickHandler = function(cell) {
-    	return function() {
+    
+    var deleteClickHandler = function(row) {
+    	return function(ev) {
     		
-    		var deleteCell = row.getElementsByTagName("td")[2];
-        	var position = cell.parentNode.rowIndex;
+    		ev.stopPropagation();
+        	var position = row.rowIndex;
 
         	var groupToDeleteUID = groups[position].uid;
         	var index = groupUIDs.indexOf(groupToDeleteUID);
@@ -276,10 +275,18 @@ function addRowHandlers() {
 
     }
      
-    currentImageCell.onclick = createClickHandler(currentImageCell); 
-    currentTextCell.onclick = createClickHandler(currentTextCell);
-    currentDeleteCell.onclick = deleteClickHandler(currentDeleteCell);
+    currentRow.onclick = clickHandler(currentRow);
+    currentDeleteButton.onclick = deleteClickHandler(currentRow);
 
   }
 
 }
+
+$("#groupsTable").on('click', 'tr', function () {
+    $(this).toggleClass('selected');
+});
+
+$('#groupsTable').on('click','.deleteButton', function(e) {
+    alert('test')
+     e.stopPropagation();
+});

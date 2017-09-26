@@ -15,11 +15,9 @@ firebase.initializeApp(config);
 
 var loginButton = document.getElementById("loginButton");
 loginButton.onclick = function() {
-	var emailBox = document.getElementById("emailBox");
-	var passwordBox = document.getElementById("passwordBox");
 
-	var email = emailBox.value;
-	var password = passwordBox.value;
+	var email = document.getElementById("emailBox").value;
+	var password = document.getElementById("passwordBox").value;
 
 	firebase.auth().signInWithEmailAndPassword(email, password)
 
@@ -35,6 +33,79 @@ loginButton.onclick = function() {
 
   		alert(errorMessage);
 
+	});
+
+}
+
+var submitButton = document.getElementById("createAccountButton");
+submitButton.onclick = function() {
+
+	var firstName = document.getElementById("firstNameBox").value;
+	var lastName = document.getElementById("lastNameBox").value;
+	var email = document.getElementById("newEmailBox").value;
+	var password = document.getElementById("newPasswordBox").value;
+	var passwordVerification = document.getElementById("verifyPasswordBox").value
+
+	if (firstName == "") {
+		alert("You must provide a first name.");
+		return;
+	}
+
+	if (lastName == "") {
+		alert("You must provide a last name.");
+		return;
+	}
+
+	if (email == "") {
+		alert("You must provide an email.");
+		return;
+	}
+
+	if (password == "") {
+		alert("You must set a password.");
+		return;
+	}
+
+	if (passwordVerification == "") {
+		alert("You must verify your password.");
+		return;
+	}
+
+	if (password != passwordVerification) {
+		alert("Your passwords don't match.");
+	}
+
+	var newUser = {};
+	var fullName = firstName.trim() + " " + lastName.trim();
+	newUser["name"] = fullName;
+
+	firebase.auth().createUserWithEmailAndPassword(email, password)
+
+	.then(function(user) {
+
+		user.updateProfile({displayName: fullName})
+
+		.then(function() {
+
+			const userRef = firebase.database().ref().child("Users").child(user.uid);
+        	userRef.set(newUser, function(error) {
+        		if (error) {
+        			console.log(error);
+        		} else {
+        			loader.style.display = "none";
+					window.location.href = "myGroups.html";
+        		}
+            }
+        }
+
+		}).catch(function(error) {
+			alert(error.message);
+		});
+
+	}
+
+	.catch(function(error) {
+  		alert(error.message);
 	});
 
 }

@@ -169,7 +169,60 @@ h2.editEntryName {
     float: right;
 }
 
+#loginButton, #createAccountButton {
+    background-color: #dc6f68;
+    margin-right: 10px;
+    margin-top: 10px;
+    color: white;
+    font-size: 14px;
+    border: none;
+    clear: both;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    float: right;
+}
 
+.email, .password, .firstName, .lastName {
+    width: calc(100% - 20px);
+    margin-top: 10px;
+    padding-left: 4px;
+    margin-left: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #efefef;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.firstName, .lastName {
+    width: calc(50% - 15px);
+}
+
+.lastName {
+    margin-left: 5px;
+}
+ 
+.verifyPassword {
+    margin-bottom: 10px;
+}
+
+.loginLabel {
+    margin-top: 5px;
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+#loginDiv {
+    width: 50%;
+    float: left;
+}
+
+#createAccountDiv {
+    width: 50%;
+    float: right;
+}
 
 header h4 {
     display: inline-block;
@@ -277,17 +330,6 @@ img {
     width: calc(100% - 20px);
     padding-left: 4px;
     font-weight: normal;
-}
-
-.email, .password {
-    margin: 10px 10px 10px 10px;
-    padding-left: 4px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #efefef;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
 }
 
 .personType {
@@ -428,18 +470,6 @@ img {
     margin-top: 15px;
     width: 60px;
     float: right;
-    border: none;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-}
-
-#loginButton {
-    margin-right: 10px;
-    margin-top: 33px;
-    font-size: 16px;
-    color: white;
-    width: 60px;
     border: none;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
