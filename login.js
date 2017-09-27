@@ -95,17 +95,36 @@ submitButton.onclick = function() {
         			loader.style.display = "none";
 					window.location.href = "myGroups.html";
         		}
-            }
-        }
+            });
 
 		}).catch(function(error) {
 			alert(error.message);
 		});
 
-	}
+	})
 
 	.catch(function(error) {
   		alert(error.message);
 	});
 
+}
+
+function forgotPasswordPressed() {
+
+	var email = document.getElementById("emailBox").value;
+
+	if (email == "") {
+		alert("You must provide an email.");
+		return;
+	}
+
+	if (confirm("Send password reset email to " + email + "?")) {
+
+		firebase.auth().sendPasswordResetEmail(email).then(function() {
+	  		alert("A password reset email has been sent to " + email + ".");
+		}).catch(function(error) {
+	  		alert(error.message)
+		});
+
+	}
 }

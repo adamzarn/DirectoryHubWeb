@@ -9,19 +9,38 @@ var config = {
 
 firebase.initializeApp(config);
 
-var currentFamily = JSON.parse(localStorage.getItem("currentFamily"));
-var editFamilyName = document.getElementById("editFamilyName");
+var currentEntry = JSON.parse(localStorage.getItem("currentEntry"));
+console.log(currentEntry);
+console.log(currentEntry["name"]);
+
+if (!currentEntry) {
+	console.log("Here")
+	currentEntry["key"] = "";
+	currentEntry["name"] = "";
+	currentEntry["phone"] = "";
+	currentEntry["email"] = "";
+	currentEntry["street"] = "";
+	currentEntry["line2"] = "";
+	currentEntry["line3"] = "";
+	currentEntry["city"] = "";
+	currentEntry["state"] = "";
+	currentEntry["zip"] = "";
+	currentEntry["people"] = [];
+}
+
+var editEntryName = document.getElementById("editEntryName");
 var people = [];
 var personDivIdToDelete = 0;
-var church = JSON.parse(localStorage.getItem("church"));
+var group = JSON.parse(localStorage.getItem("group"));
 
-editFamilyName.innerText = "Edit Family";
-if (currentFamily.key == "") {
+editEntryName.innerText = "Edit Entry";
+if (currentEntry.key == "") {
 	var submitChangesButton = document.getElementById("submitChangesButton");
 	submitChangesButton.innerText = "Submit";
-	editFamilyName.innerText = "Add Entry";
+	editEntryName.innerText = "Add Entry";
 } else {
-	people = currentFamily.people;
+	people = currentEntry.people;
+
 }
 
 $(document).on('change','#addPersonType', function() {
@@ -69,26 +88,26 @@ submitChangesButton.onclick = function() {
 	var emailInputBox = document.getElementById("emailInputBox");
 
 	if (lastNameInputBox.value == "") {
-		alert("A family must have a last name.");
+		alert("An entry must have a last name.");
 		return
 	}
 
 	if (people.length == 0) {
-		alert("A family must contain at least 1 person.");
+		alert("An entry must contain at least 1 person.");
 		return
 	}
 
 	var personTypes = getPersonTypes(people);
 	if (!personTypes.includes("Husband") && !personTypes.includes("Wife") && !personTypes.includes("Single")) {
-		alert("A family must contain at least 1 adult.");
+		alert("An entry must contain at least 1 adult.");
 		return
 	} 
 	if (personTypes.includes("Husband") && !personTypes.includes("Wife")) {
-		alert("If a family has a husband, it must also have a wife.");
+		alert("If an entry has a husband, it must also have a wife.");
 		return
 	}
 	if (personTypes.includes("Wife") && !personTypes.includes("Husband")) {
-		alert("If a family has a wife, it must also have a husband.");
+		alert("If an entry has a wife, it must also have a husband.");
 		return
 	}
 
@@ -96,21 +115,26 @@ submitChangesButton.onclick = function() {
 	var status = document.getElementById('status');
 	status.innerText = "Uploading Changes...";
 
-	var familyRef = firebase.database().ref(church.name + "/Directory/" + currentFamily.key);
-	if (editFamilyName.innerText == "Add Family") {
-		familyRef = firebase.database().ref(church.name + "/Directory").push();
+	var entryRef = "";
+
+	if (currentEntry.key == "") {
+		entryRef = firebase.database().ref().child("Directories").child(group.uid).push();
 		status.innerText = "Adding Entry...";
+	} else {
+		entryRef = firebase.database().ref().child("Directories").child(group.uid).child(currentEntry.key);
 	}
+
+	var uid = entryRef.getKey();
 	
 	modal.style.display = "block";
 
-	familyRef.set({
+	entryRef.set({
 		name: lastNameInputBox.value,
 		phone: phoneNumberInputBox.value,
 		email: emailInputBox.value,
-		Address: createAddress(currentFamily)}
+		Address: createAddress(currentEntry)}
 	);
-	var peopleRef = familyRef.child("People");
+	var peopleRef = entryRef.child("People");
 	var i = 0;
 	var count = people.length;
 	people.forEach(function(person) {
@@ -123,10 +147,11 @@ submitChangesButton.onclick = function() {
 			function(error) {
 				if (i == count) {
 					if (error) {
-						alert("Data could not be saved." + error);
+						alert("Data could not be saved." + error.meessage);
   					} else {
-    					localStorage.setItem("families", "null");
-  						window.location.href = "directory.html";
+  						localStorage.setItem("currentEntryKey", uid)
+  						localStorage.setItem("currentEntry", "null");
+  						window.location.href = "entry.html";
 					}
 				}
 			}
@@ -135,7 +160,7 @@ submitChangesButton.onclick = function() {
 	});
 }
 
-function createAddress(currentFamily) {
+function createAddress(currentEntry) {
 
 	var street = document.getElementById("street");
 	var line2 = document.getElementById("line2");
@@ -154,7 +179,7 @@ function createAddress(currentFamily) {
 	}
 }
 
-setUpPage(currentFamily);
+setUpPage(currentEntry);
 
 function setUpModal() {
 
@@ -214,15 +239,15 @@ function setUpModal() {
   		if (addPersonType.value != "Child") {
   			if (addPersonLabel.innerText == "Add Person") {
 	  			if (personTypes.includes(addPersonType.value)) {
-	  				alert("This family already has a " + addPersonType.value + ". Please change the person's type.")
+	  				alert("This entry already has a " + addPersonType.value + ". Please change the person's type.")
 	  				return
 	  			} 
 	  			if (addPersonType.value == "Single" && (personTypes.includes("Husband") || personTypes.includes("Wife"))) {
-	  				alert("A Single cannot be in the same family as a Husband or Wife.");
+	  				alert("A Single cannot be in the same entry as a Husband or Wife.");
 	  				return
 	  			}
 	  			if ((addPersonType.value == "Husband" || addPersonType.value == "Wife") && personTypes.includes("Single")) {
-	  				alert("A Husband or Wife cannot be in the same family as a Single.");
+	  				alert("A Husband or Wife cannot be in the same entry as a Single.");
 	  				return
 	  			}
 	  		}
@@ -233,7 +258,7 @@ function setUpModal() {
   			}
   			if (addPersonLabel.innerText == "Add Person") {
 	  			if (getBirthOrders(people).includes(addPersonBirthOrder.value)) {
-	  				alert("This family already has a child with birth order " + addPersonBirthOrder.value + ". Please change this child's birth order.")
+	  				alert("This entry already has a child with birth order " + addPersonBirthOrder.value + ". Please change this child's birth order.")
 	  				return
 	  			}
   			}	
@@ -250,15 +275,15 @@ function setUpModal() {
   		if (addPersonLabel.innerText == "Add Person") {
 	  		modal.style.display = "none";
 	        people.push(newPerson);
-	        currentFamily.people = people;
+	        currentEntry.people = people;
 	    } else {
 	    	modal.style.display = "none";
 	    	people[editingIndex] = newPerson;
-	    	currentFamily.people = people;
+	    	currentEntry.people = people;
 	    }
 
 	    $(".personDiv").remove();
-	    addPeople(currentFamily);
+	    addPeople(currentEntry);
 	    if (addPersonLabel.innerText == "Add Person") {
 			jumpToPageBottom();
 		}
@@ -276,21 +301,23 @@ function jumpToPageBottom() {
     $('html, body').scrollTop( $(document).height() - $(window).height() );
 }
 
-function setUpPage(currentFamily) {
+function setUpPage(currentEntry) {
 	addHeader("Basic Info");
 
-	addInputBox(currentFamily.name, "Last Name", "text", "100", "lastNameInputBox");
-	addInputBox(currentFamily.phone, "Home Phone", "phone_num", "12", "phoneNumberInputBox");
-	addInputBox(currentFamily.email, "Family Email", "text", "100", "emailInputBox");
-	addAddress(currentFamily);
+	console.log(currentEntry.name);
+	console.log(currentEntry["name"]);
+	addInputBox(currentEntry.name, "Last Name", "text", "100", "lastNameInputBox");
+	addInputBox(currentEntry.phone, "Home Phone", "phone_num", "12", "phoneNumberInputBox");
+	addInputBox(currentEntry.email, "Email", "text", "100", "emailInputBox");
+	addAddress(currentEntry);
 
-	editFamilyDetails.appendChild(addPersonButton);
+	editEntryDetails.appendChild(addPersonButton);
 
 	var space = document.createElement("br");
-	editFamilyDetails.appendChild(space);
+	editEntryDetails.appendChild(space);
 
 	addHeader("People");
-	addPeople(currentFamily);
+	addPeople(currentEntry);
 }
 
 $("input[name='phone_num']").keyup(function() {
@@ -306,13 +333,13 @@ $("input[name='phone_num']").keyup(function() {
 });
 
 function addHeader(text) {
-	var editFamilyDetails = document.getElementById("editFamilyDetails");
+	var editEntryDetails = document.getElementById("editEntryDetails");
 
 	var newHeader = document.createElement("p");
 	newHeader.setAttribute("class", "boldHeader");
 	newHeader.setAttribute("id", text);
 	newHeader.innerText = text;
-	editFamilyDetails.appendChild(newHeader);
+	editEntryDetails.appendChild(newHeader);
 }
 
 function compare(a, b) {
@@ -325,7 +352,7 @@ function compare(a, b) {
 
 function addInputBox(value, placeholder, name, maxlength, id) {
 
-	var editFamilyDetails = document.getElementById("editFamilyDetails");
+	var editEntryDetails = document.getElementById("editEntryDetails");
 
 	inputBox = document.createElement("input");
 	inputBox.setAttribute("type", "text");
@@ -335,19 +362,19 @@ function addInputBox(value, placeholder, name, maxlength, id) {
 	inputBox.setAttribute("maxlength", maxlength);
 	inputBox.value = value;
 	inputBox.placeholder = placeholder;
-    editFamilyDetails.appendChild(inputBox);
+    editEntryDetails.appendChild(inputBox);
 
 }
 
-function addAddress(family) {
+function addAddress(entry) {
 
-	var editFamilyDetails = document.getElementById("editFamilyDetails");
+	var editEntryDetails = document.getElementById("editEntryDetails");
 
 	addHeader("Address");
 
-	addInputBox(family.street, "Street", "text", "100", "street");
-	addInputBox(family.line2, "Line 2", "text", "100", "line2");
-	addInputBox(family.line3, "Line 3", "text", "100", "line3");
+	addInputBox(entry.street, "Street", "text", "100", "street");
+	addInputBox(entry.line2, "Line 2", "text", "100", "line2");
+	addInputBox(entry.line3, "Line 3", "text", "100", "line3");
 
 	var cityStateZip = document.createElement("div");
 	cityStateZip.setAttribute("class", "cityStateZip");
@@ -356,7 +383,7 @@ function addAddress(family) {
 	city.setAttribute("type", "text");
 	city.setAttribute("id", "city");
 	city.placeholder = "City";
-	city.value = family.city;
+	city.value = entry.city;
 	cityStateZip.appendChild(city);
 
 	var stateArray = ["State", "IL", "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
@@ -376,27 +403,27 @@ function addAddress(family) {
 	}
 
 	state.setAttribute("id", "state");
-	state.value = family.state;
+	state.value = entry.state;
 	cityStateZip.appendChild(state);
 
 	var zip = document.createElement("input");
 	zip.setAttribute("type", "text");
 	zip.setAttribute("id", "zip");
 	zip.placeholder = "Zip";
-	zip.value = family.zip;
+	zip.value = entry.zip;
 	cityStateZip.appendChild(zip);
 
-	editFamilyDetails.appendChild(cityStateZip);
+	editEntryDetails.appendChild(cityStateZip);
 
 }
 
-function addPeople(family) {
+function addPeople(entry) {
 
-	var editFamilyDetails = document.getElementById("editFamilyDetails");
+	var editEntryDetails = document.getElementById("editEntryDetails");
 	
-	family.people.sort(compare);
+	entry.people.sort(compare);
 	var i = 0;
-	family.people.forEach(function(person) {
+	entry.people.forEach(function(person) {
 		addPerson(person, i);
 		i++;
 	});
@@ -405,10 +432,11 @@ function addPeople(family) {
 
 function addPerson(person, i) {
 
-	var editFamilyDetails = document.getElementById("editFamilyDetails");
+	var editEntryDetails = document.getElementById("editEntryDetails");
 	var personDiv = document.createElement("div");
 	personDiv.setAttribute("class", "personDiv");
-	personDiv.setAttribute("id", i)
+	personDiv.setAttribute("id", 
+		i)
 
 	var birthOrderString = person.type;
 	if (person.type == "Child") {
@@ -462,7 +490,7 @@ function addPerson(person, i) {
     }
 
     deleteButton = document.createElement("button");
-    deleteButton.setAttribute("class", "deleteButton");
+    deleteButton.setAttribute("class", "deletePersonButton");
     deleteButton.innerText = "Delete";
 
     deleteButton.onclick = function() {
@@ -499,15 +527,15 @@ function addPerson(person, i) {
 	email.innerText = "Email: " + person.email;
     personDiv.appendChild(email);
 
-	editFamilyDetails.appendChild(personDiv);
+	editEntryDetails.appendChild(personDiv);
 
 }
 
 function deletePerson(personDivId) {
 	people.splice(personDivId, 1);
-    currentFamily.people = people;
+    currentEntry.people = people;
     $(".personDiv").remove();
-	addPeople(currentFamily);
+	addPeople(currentEntry);
 }
 
 function getPersonTypes(people) {

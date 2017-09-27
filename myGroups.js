@@ -38,6 +38,8 @@ var deletedGroups = 0;
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
+  	var welcomeLabel = document.getElementById("welcomeLabel");
+  	welcomeLabel.innerText = "Welcome " + firebase.auth().currentUser.displayName + "!";
     loadGroups();
   } else {
     console.log("No user is signed in.");
@@ -72,13 +74,21 @@ function loadGroups() {
 
 function getMyGroups() {
 	const users = firebase.database().ref("Users");
-	const query = users.child(firebase.auth().currentUser.uid).child("groups");
+	const query = users.child(firebase.auth().currentUser.uid);
 
 	query.once('value', function(snapshot) {
-		groupUIDs = snapshot.val();
+		user = snapshot.val();
 
-		for (var i = 0; i < groupUIDs.length; i++) {
-			getGroup(groupUIDs[i]);
+		if (snapshot.hasChild("groups")) {
+
+			groupUIDs = user["groups"];
+
+			for (var i = 0; i < groupUIDs.length; i++) {
+				getGroup(groupUIDs[i]);
+			}
+
+		} else {
+			loader.style.display = "none";
 		}
 
 	});
@@ -254,7 +264,6 @@ function addRowHandlers() {
       };
 
     };
-
     
     var deleteClickHandler = function(row) {
     	return function(ev) {
@@ -263,13 +272,33 @@ function addRowHandlers() {
         	var position = row.rowIndex;
 
         	var groupToDeleteUID = groups[position].uid;
+        	var groupToDeleteName = groups[position].name;
         	var index = groupUIDs.indexOf(groupToDeleteUID);
 
-        	if (index > -1) {
-        		groupUIDs.splice(position, 1);
-        	};
+        	var modal = document.getElementById('confirmDeleteModal');
 
-    		updateUserGroups(firebase.auth().currentUser.uid, groupUIDs);
+        	var joinGroupButton = document.getElementById('deleteGroupButton');
+        	var cancelJoinGroupButton = document.getElementById('cancelDeleteGroupButton');
+
+        	var passwordPrompt = document.getElementById('deleteGroupPrompt');
+        	passwordPrompt.innerHTML = "This will only remove \"" + groupToDeleteName + "\" from \"My Groups\". You will be able to add it back again later. Continue?";
+
+        	modal.style.display = "block";
+
+  			deleteGroupButton.onclick = function() {
+
+				if (index > -1) {
+        			groupUIDs.splice(position, 1);
+        		};
+
+    			updateUserGroups(firebase.auth().currentUser.uid, groupUIDs);
+    			modal.style.display = "none";
+
+    		}
+
+    		cancelDeleteGroupButton.onclick = function() {
+    			modal.style.display = "none";
+    		}
 
     	}
 
@@ -281,12 +310,3 @@ function addRowHandlers() {
   }
 
 }
-
-$("#groupsTable").on('click', 'tr', function () {
-    $(this).toggleClass('selected');
-});
-
-$('#groupsTable').on('click','.deleteButton', function(e) {
-    alert('test')
-     e.stopPropagation();
-});

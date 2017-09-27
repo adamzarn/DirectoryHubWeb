@@ -12,6 +12,9 @@ firebase.initializeApp(config);
 
 var entries = [];
 var group = JSON.parse(localStorage.getItem("group"));
+console.log(group);
+console.log(group.uid);
+localStorage.setItem("groupUID", group.uid);
 var myGroupsButton = document.getElementById("myGroupsButton");
 
 myGroupsButton.onclick = function() {
@@ -40,7 +43,8 @@ var addEntryButton = document.getElementById("addEntryButton");
 
 addEntryButton.onclick = function() {
 
-    window.location.href("editEntry.html")
+    localStorage.setItem("currentEntry", "");
+    window.location.href = "editEntry.html";
 
 }
 
@@ -232,9 +236,8 @@ function addRowHandlers() {
         	var name = cell.innerHTML;
 
           var entry = entries[position];
-          console.log(entry);
-        	localStorage.setItem("currentEntry", JSON.stringify(entry));
 
+          localStorage.setItem("currentEntryKey", entry.key);
           var searchBox = document.getElementById("searchBox");
           searchBox.value = "";
         	window.location.href = "entry.html";

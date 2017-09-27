@@ -12,10 +12,11 @@
 
 	</head>
 
-	<body class="page">
+	<body class="myGroupsPage">
 
 		<header>
     		<h2 class="group">My Groups</h2>
+    		<h4 id="welcomeLabel" style="margin-left: 20px">Welcome!</h4>
     		<button class="button" id="addGroupButton">Add Group</button>
     		<button class="button" id="logoutButton">Logout</button>
   		</header>
@@ -28,6 +29,20 @@
 		</table>
 
 		<div id="loader" class="loader"></div>
+
+		<div id="confirmDeleteModal" class="confirmDeleteModal">
+  			<div class="confirmDeleteModalContent">
+  				
+  				<label class="center" id="joinGroupLabel">Delete Group</label>
+  				<label id="deleteGroupPrompt" class="prompt"></label>
+  				</br>
+
+    			<div class="twoButtonDiv">
+    				<button type="cancel" id="cancelDeleteGroupButton" class="leftButton">Cancel</button>
+    				<button type="submit" id="deleteGroupButton" class = "rightButton">Delete</button>
+    			</div>
+  			</div>
+		</div>
 
 		<script src="jquery-3.2.1.js"></script>
 		<script type="text/javascript" src="myGroups.js"></script>

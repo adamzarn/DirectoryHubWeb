@@ -66,23 +66,27 @@ function queryGroups(searchKey, searchTerm) {
 
       snapshot.forEach(function(childSnapshot) {
 
-        if (!currentUserGroups.includes(childSnapshot.key)) {
+        if (!currentUserGroups) {
+          currentUserGroups = [];
+        }
 
-          var group = {
-           uid: childSnapshot.key,
-           name: childSnapshot.child('name').val(),
-           lowercasedName: childSnapshot.child('lowercasedName').val(),
-           city: childSnapshot.child('city').val(),
-           state: childSnapshot.child('state').val(),
-           createdBy: childSnapshot.child('createdBy').val(),
-           lowercasedCreatedBy: childSnapshot.child('lowercasedCreatedBy').val(),
-           createdByUid: childSnapshot.child('createdByUid').val(),
-           password: childSnapshot.child('password').val(),
-           admins: childSnapshot.child('admins').val(),
-           users: childSnapshot.child('users').val()
-          };
+          if (!currentUserGroups.includes(childSnapshot.key)) {
 
-          this.groups.push(group);
+            var group = {
+             uid: childSnapshot.key,
+             name: childSnapshot.child('name').val(),
+             lowercasedName: childSnapshot.child('lowercasedName').val(),
+             city: childSnapshot.child('city').val(),
+             state: childSnapshot.child('state').val(),
+             createdBy: childSnapshot.child('createdBy').val(),
+             lowercasedCreatedBy: childSnapshot.child('lowercasedCreatedBy').val(),
+             createdByUid: childSnapshot.child('createdByUid').val(),
+             password: childSnapshot.child('password').val(),
+             admins: childSnapshot.child('admins').val(),
+             users: childSnapshot.child('users').val()
+            };
+
+            this.groups.push(group);
 
         }
 
@@ -176,7 +180,7 @@ function addRowHandlers() {
         var cancelJoinGroupButton = document.getElementById('cancelJoinGroupButton');
 
         var passwordPrompt = document.getElementById('joinGroupPrompt');
-        passwordPrompt.innerHTML = "A password is required to join the group \"" + groups[position].name + "\"";
+        passwordPrompt.innerHTML = "A password is required to join the group \"" + groups[position].name + "\".";
 
         modal.style.display = "block";
 

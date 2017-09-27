@@ -10,61 +10,18 @@ var config = {
 
 firebase.initializeApp(config);
 
-var currentEntry = JSON.parse(localStorage.getItem("currentEntry"));
-var group = JSON.parse(localStorage.getItem("group"));
+document.body.style.display = "none";
+
+var groupUID = localStorage.getItem("groupUID");
+getEntry(localStorage.getItem("currentEntryKey"));
 
 var editingEntry = true;
-
-var entryName = document.getElementById("entryName");
-entryName.innerText = getEntryName(currentEntry);
-
-addPhone(currentEntry);
-addEmail(currentEntry);
-addAddress(currentEntry);
-addPeople(currentEntry);
 
 var editEntryButton = document.getElementById("editEntryButton");
 editEntryButton.onclick = function() {
 
-	var modal = document.getElementById('myModal');
-    var span = document.getElementsByClassName("close")[0];
-    var passwordField = document.getElementById('passwordField');
-    passwordField.placeholder = "Password";
-    var submitButton = document.getElementById('submitButton');
-    var passwordPrompt = document.getElementById('passwordPrompt');
-    passwordPrompt.innerHTML = "You must enter this directory's Administrator Password to edit an entry:";
-    var verification = document.getElementById('verification');
+    window.location.href = "editEntry.html";
 
-    modal.style.display = "block";
-
-    span.onclick = function() {
-
-        modal.style.display = "none";
-        passwordField.value = "";
-        verification.innerText = "";
-
-    }
-
-    window.onclick = function(event) {
-
-      if (event.target == modal) {
-          modal.style.display = "none";
-          passwordField.value = "";
-          verification.innerText = "";
-      }
-
-    }
-
-    submitButton.onclick = function() {
-
-      if (church.adminPassword == passwordField.value) {
-        	verification.innerText = "";
-          	window.location.href = "editEntry.html";
-      } else {
-        verification.innerText = "Incorrect Password.";
-      }
-
-    }
 }
 
 var deleteEntryButton = document.getElementById("deleteEntryButton");
@@ -176,7 +133,14 @@ function addAddress(entry) {
 
 		}
 
-		var cityStateZipString = entry.city + ", " + entry.state + " " + entry.zip;
+		var cityStateZipString = "";
+		if (!entry.city) {
+			cityStateZipString = entry.state + " " + entry.zip;
+		} else if (entry.city) {
+			cityStateZipString = entry.city + ", " + entry.state + " " + entry.zip;
+		} else {
+			cityStateZipString = "";
+		}
 
 		var cityStateZip = document.createElement("p");
 		cityStateZip.setAttribute("class", "detailLine");
@@ -258,5 +222,55 @@ function addPerson(person) {
 	}
 
 	entryDetails.appendChild(newDiv);
+
+}
+
+function getEntry(uid) {
+
+  	var ref = firebase.database().ref("Directories").child(groupUID).child(uid);
+
+  	ref.on("value", function(entry) {
+
+        var people = [];
+        entry.child('People').forEach(function(person) {
+            var newPerson = {
+              	name: person.child('name').val(), 
+                type: person.child('type').val(), 
+                phone: person.child('phone').val(),
+                email: person.child('email').val(), 
+                birthOrder: person.child('birthOrder').val(), 
+             };
+            people.push(newPerson);
+        })
+
+        var newEntry = {
+            key: entry.key,
+            name: entry.child('name').val(),
+            phone: entry.child('phone').val(),
+            email: entry.child('email').val(),
+            street: entry.child('Address').child('street').val(),
+            line2: entry.child('Address').child('line2').val(),
+            line3: entry.child('Address').child('line3').val(),
+            city: entry.child('Address').child('city').val(),
+            state: entry.child('Address').child('state').val(),
+            zip: entry.child('Address').child('zip').val(),
+            people: people
+        };
+
+     	currentEntry = newEntry;
+     	console.log(currentEntry);
+     	localStorage.setItem("currentEntry", JSON.stringify(currentEntry));
+
+ 		var entryName = document.getElementById("entryName");
+		entryName.innerText = getEntryName(currentEntry);
+
+		addPhone(currentEntry);
+		addEmail(currentEntry);
+		addAddress(currentEntry);
+		addPeople(currentEntry);
+
+		document.body.style.display = "";
+
+	});
 
 }
