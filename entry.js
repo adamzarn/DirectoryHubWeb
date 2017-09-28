@@ -10,25 +10,40 @@ var config = {
 
 firebase.initializeApp(config);
 
-document.body.style.display = "none";
+var deleteEntryButton = document.getElementById("deleteEntryButton");
+var editEntryButton = document.getElementById("editEntryButton");
+var directoryButton = document.getElementById("directoryButton");
+var loader = document.getElementById("entryLoader");
+deleteEntryButton.style.display = "none";
+editEntryButton.style.display = "none";
+directoryButton.style.display = "none";
+loader.style.display = "block";
 
 var groupUID = localStorage.getItem("groupUID");
-getEntry(localStorage.getItem("currentEntryKey"));
+var currentEntryKey = localStorage.getItem("currentEntryKey");
+getEntry(currentEntryKey);
 
 var editingEntry = true;
 
-var editEntryButton = document.getElementById("editEntryButton");
 editEntryButton.onclick = function() {
-
     window.location.href = "editEntry.html";
-
+}
+directoryButton.onclick = function() {
+	window.location.href = "directory.html";
 }
 
-var deleteEntryButton = document.getElementById("deleteEntryButton");
-
-deleteEntryButton.onclick = function() {
-	
-}
+var group = JSON.parse(localStorage.getItem("group"));
+var admins = group.admins;
+var adminKeys = Object.keys(admins);
+firebase.auth().onAuthStateChanged(function(user) {
+  if (adminKeys.includes(user.uid)) {
+    editEntryButton.style.display = "";
+    deleteEntryButton.style.display = "";
+  } else {
+    editEntryButton.style.display = "none";
+    deleteEntryButton.style.display = "none";
+  }
+});
 
 function getEntryName(entry) {
 	var people = entry.people;
@@ -229,7 +244,7 @@ function getEntry(uid) {
 
   	var ref = firebase.database().ref("Directories").child(groupUID).child(uid);
 
-  	ref.on("value", function(entry) {
+  	ref.once("value", function(entry) {
 
         var people = [];
         entry.child('People').forEach(function(person) {
@@ -258,7 +273,6 @@ function getEntry(uid) {
         };
 
      	currentEntry = newEntry;
-     	console.log(currentEntry);
      	localStorage.setItem("currentEntry", JSON.stringify(currentEntry));
 
  		var entryName = document.getElementById("entryName");
@@ -269,8 +283,64 @@ function getEntry(uid) {
 		addAddress(currentEntry);
 		addPeople(currentEntry);
 
-		document.body.style.display = "";
+		directoryButton.style.display = "";
+		loader.style.display = "none";
 
 	});
 
+}
+
+deleteEntryButton.onclick = function() {
+
+	var areYouSureModal = document.getElementById("areYouSureModal");
+    areYouSureModal.style.display = "block";
+    var areYouSure = document.getElementById("areYouSure");
+    var noButton = document.getElementById("no");
+    var yesButton = document.getElementById("yes");
+    areYouSure.innerText = "This can't be undone. Are you sure you want to delete this entry?"
+    noButton.innerText = "No";
+    yesButton.innerText = "Yes";
+
+    noButton.onclick = function() {
+    	areYouSureModal.style.display = "none";
+    }
+    	
+    yesButton.onclick = function() {
+    	deleteEntry()
+    	areYouSureModal.style.display = "none";
+    }
+
+}
+
+function deleteEntry() {
+
+	var successModal = document.getElementById('successModal');
+	var successTitle = document.getElementById('successTitle');
+	var message = document.getElementById('message');
+
+	document.getElementById("loadingModal").style.display = "block";
+
+	const entryRef = firebase.database().ref().child("Directories").child(groupUID).child(currentEntryKey);
+	entryRef.remove(function(error) {
+		if (error) {
+			document.getElementById("loadingModal").style.display = "none";
+			successModal.style.display = "block";
+			successTitle.innerText = "Failure";
+			mesesage.innerText = "There was a problem deleting this entry. Please try again."
+		} else {
+			document.getElementById("loadingModal").style.display = "none";
+			successModal.style.display = "block";
+			successTitle.innerText = "Success";	
+			message.innerText = "This entry was successfully deleted."
+		}
+	});
+
+}
+
+var okButton = document.getElementById("ok");
+okButton.onclick = function() {
+	successModal.style.display = "none";
+	if (successTitle.innerText == "Success") {
+		window.location.href = "directory.html";
+	}
 }

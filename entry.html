@@ -14,12 +14,15 @@
 	<body id="entryBody" class="page">
 
 		<header>
-			<h2 id="entryName" class="entryName"></h2>
+			<h2 id="entryName" class="entryName">&nbsp</h2>
 			<button class="button" id="editEntryButton">Edit</button>
+			<button class="button" id="directoryButton">Back to Directory</button>
   		</header>
 
   		<div id="entryDetails" class="entryDetails">
   		</div>
+
+  		<div id="entryLoader" class="loader"></div>
 
   		<button id="deleteEntryButton" class="button">Delete</button>
 
@@ -27,6 +30,26 @@
   			<div id="loadingModalContent" class="loading-modal-content">
   				<label id="status" class="center">Deleting Entry...</label>
     			<div id="loader" class="loader"></div>
+  			</div>
+		</div>
+
+		<div id="areYouSureModal" class="modal">
+  			<div id="areYouSureModalContent" class="are-you-sure-modal-content">
+  				<label id="title" class="center">Delete Entry</label>
+  				<p id="areYouSure" class="center"></p>
+  				<div class="twoButtonDiv">
+    				<button type="cancel" id="no" class="leftButton">Cancel</button>
+    				<button type="submit" id="yes" class="rightButton">Yes</button>
+    			</div>
+  			</div>
+		</div>
+
+		<div id="successModal" class="modal">
+  			<div id="successModalContent" class="successModalContent">
+  				<label id="successTitle" class="center"></label>
+  				<p id="message" class="center"></p>
+    			<button type="submit" id="ok" class="center">OK</button>
+    			</div>
   			</div>
 		</div>
 

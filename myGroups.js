@@ -15,7 +15,27 @@ loader.style.display = "none"
 
 var addGroupButton = document.getElementById('addGroupButton');
 addGroupButton.onclick = function() {
-    window.location.href = "searchGroups.html";
+	var modal = document.getElementById("addGroupModal");
+	modal.style.display = "block";
+
+	window.onclick = function(event) {
+    	if (event.target == modal) {
+        	modal.style.display = "none";
+    	}
+	}
+
+	var createGroupButton = document.getElementById("createGroupButton");
+	createGroupButton.onclick = function() {
+		localStorage.setItem("group", "");
+		window.location.href = "createGroup.html";
+	}
+
+	var searchGroupsButton = document.getElementById("searchGroupsButton");
+	searchGroupsButton.onclick = function() {
+		window.location.href = "searchGroups.html";
+	}
+
+    
 }
 
 var logoutButton = document.getElementById('logoutButton');
@@ -34,6 +54,7 @@ var title = document.getElementById('title');
 var search = document.getElementById('searchBox');
 var groups = [];
 var groupUIDs = [];
+var previousGroupUIDs = [];
 var deletedGroups = 0;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -49,13 +70,11 @@ firebase.auth().onAuthStateChanged(function(user) {
 function searchMyGroups() {
     var search = document.getElementById("searchBox");
     var filter = search.value.toLowerCase();
-    console.log(filter);
     table = document.getElementById("groupsTable");
     rows = table.getElementsByTagName("tr");
     for (i = 0; i < rows.length; i++) {
         var cell = rows[i].getElementsByTagName("td")[1];
         var header = cell.getElementsByTagName("p")[0];
-        console.log(header.innerText.toLowerCase());
         if (header.innerText.toLowerCase().indexOf(filter) > -1) {
             rows[i].style.display = "";
         } else {
@@ -78,6 +97,8 @@ function getMyGroups() {
 
 	query.once('value', function(snapshot) {
 		user = snapshot.val();
+
+		localStorage.setItem("currentUser", JSON.stringify(user));
 
 		if (snapshot.hasChild("groups")) {
 
@@ -115,18 +136,33 @@ function getGroup(uid) {
          users: childSnapshot.child('users').val()
         };
 
-        this.groups.push(group);
+      	if (group.name) {
+        	this.groups.push(group);
+    	} else {
+    		deletedGroups = deletedGroups + 1;
+    	}
 
         if (this.groups.length == this.groupUIDs.length - deletedGroups) {
-	        addRows();
-	      	addRowHandlers();
-
-	      	localStorage.setItem("groups", JSON.stringify(groups));
+        	if (this.groups.length > 0) {
+		        addRows();
+		      	addRowHandlers();
+		      	localStorage.setItem("groups", JSON.stringify(groups));
+		    }
 	      	loader.style.display = "none"
         }
 
     }, function(error) {
     	deletedGroups = deletedGroups + 1;
+
+    	if (this.groups.length == this.groupUIDs.length - deletedGroups) {
+    		if (this.groups.length > 0) {
+		        addRows();
+		      	addRowHandlers();
+		      	localStorage.setItem("groups", JSON.stringify(groups));
+	      	}
+	      	loader.style.display = "none"
+        }
+
     });
 
 }
@@ -135,12 +171,12 @@ function addRows() {
 
   var g = this.groups;
   for (i = 0; i < g.length; i++) {
-      addRow(g[i].uid, g[i].name, g[i].city, g[i].state, g[i].createdBy, i);
+      addRow(g[i].uid, g[i].name, g[i].city, g[i].state, g[i].createdBy, Object.keys(g[i].admins), i);
   }
 
 }
 
-function addRow(uid, name, city, state, createdBy, position) {
+function addRow(uid, name, city, state, createdBy, admins, position) {
 
   if (!document.getElementsByTagName) return;
 
@@ -153,6 +189,7 @@ function addRow(uid, name, city, state, createdBy, position) {
     imageCell.setAttribute("class", "imageCell");
     imageElement = document.createElement("img");
     imageElement.setAttribute("id", "imageElement" + position);
+    imageElement.setAttribute("onerror", "this.style.display='none'");
     pathReference.getDownloadURL().then(function(url) {
       document.getElementById("imageElement" + position).src = url;
     }).catch(function(error) {
@@ -180,64 +217,71 @@ function addRow(uid, name, city, state, createdBy, position) {
     createdByElement.appendChild(createdByNode);
     textCell.appendChild(createdByElement);
 
-    deleteCell = document.createElement("td");
-    deleteCell.setAttribute("class", "deleteCell");
-    deleteElement = document.createElement("button");
-    deleteElement.setAttribute("class", "deleteButton");
+    modifyCell = document.createElement("td");
+    modifyCell.setAttribute("class", "modifyCell");
+    
+    if (admins.includes(firebase.auth().currentUser.uid)) {
+	    editElement = document.createElement("button");
+	    editElement.setAttribute("class", "editGroupButton");
+	    editElement.setAttribute("id", "edit" + position);
+	    editElement.innerText = "Edit";
+	    modifyCell.appendChild(editElement);
+	}
+
+	deleteElement = document.createElement("button");
+    deleteElement.setAttribute("class", "deleteGroupButton");
     deleteElement.setAttribute("id", "delete" + position);
-    deleteElement.innerText = "X";
-    deleteCell.appendChild(deleteElement);
+   	deleteElement.innerText = "Delete";
+   	modifyCell.appendChild(deleteElement);
 
     row.appendChild(imageCell);
     row.appendChild(textCell);
-    row.appendChild(deleteCell);
+    row.appendChild(modifyCell);
 
     tabBody.appendChild(row);
 
 }
 
-function deleteGroup(uid) {
+function updateUserGroups(userUID, groups, previousGroupUIDs, groupUID) {
+	
+	const userRef = firebase.database().ref().child("Users").child(userUID).child("groups");
+	const adminRef = firebase.database().ref().child("Groups").child(groupUID).child("admins").child(userUID);
 
-	const groupRef = firebase.database().ref().child("Groups").child(uid)
-    const directoryRef = firebase.database().ref().child("Directories").child(uid)
-    const imageRef = firebase.storage().child("\(uid).jpg")
-        
-    groupRef.remove(function(error) { 
-        if (error) {
-        	return;
-        } else {
-            directoryRef.remove(function(error) {
-                if (error) {
-                    return;
-                } else {
-                	imageRef.delete(function(error) {
-                		if (error) {
-                			return;
-                		} else {
-                			console.log("successfully deleted")
-                		}
-                	});
-                }
-            });
-        }
-    });
-}
-
-function updateUserGroups(userUID, groups) {
-	const userRef = firebase.database().ref().child("Users").child(userUID);
-    userRef.child("groups").set(groups, function(error) {
-    	if (error) {
-    		console.log(error);
-    	} else {
-    		console.log("success");
-    		var table = document.getElementById("groupsTable");
-    		while(table.rows.length > 0) {
-  				table.deleteRow(0);
-			}
-    		loadGroups();
-    	}
-    });
-
+	const usersRef = firebase.database().ref().child("Groups").child(groupUID).child("users").child(userUID);
+	const adminsRef = firebase.database().ref().child("Groups").child(groupUID).child("admins");
+	
+	adminsRef.once('value', function(snapshot) {
+		var admins = snapshot.val();
+		var keys = Object.keys(admins)
+		if (keys.length == 1 && keys[0] == userUID) {
+			groupUIDs = previousGroupUIDs;
+			alert("You are the only administrator for this group, so you cannot remove it from \"My Groups\".");
+		} else {
+			userRef.set(groups, function(error) {
+		    	if (error) {
+		    		alert(error.message);
+		    	} else {
+		    		adminRef.set(null, function(error) {
+		    			if (error) {
+		    				alert(error.message);
+		    			} else {
+		    				usersRef.set(null, function(error) {
+		    					if (error) {
+		    						alert(error.message);
+		    					} else {
+		    						var table = document.getElementById("groupsTable");
+		    						while(table.rows.length > 0) {
+		  								table.deleteRow(0);
+									}
+		    						loadGroups();
+		    					}
+		    				});
+		    			}
+		    		});
+		    	}
+		    });
+		}
+	});
 }
 
 function addRowHandlers() {
@@ -247,66 +291,87 @@ function addRowHandlers() {
 
   for (i = 0; i < rows.length; i++) {
     
-    var currentRow = table.rows[i];
-    var currentDeleteButton = document.getElementById("delete" + i);
+	    var currentRow = table.rows[i];
+	    if (document.getElementById("edit" + i)) {
+	    	currentEditButton = document.getElementById("edit" + i);
+	    } else {
+	    	currentEditButton = null;
+	    }
+	    var currentDeleteButton = document.getElementById("delete" + i);
 
-    var clickHandler = function(row) {
-      return function(ev) {
+	    var clickHandler = function(row) {
+	      return function(ev) {
 
-      	ev.stopPropagation();
-        var position = row.rowIndex;
-        var selectedGroup = groups[position];
+	      	ev.stopPropagation();
+	        var position = row.rowIndex;
+	        var selectedGroup = groups[position];
 
-        localStorage.setItem("group", JSON.stringify(selectedGroup));
+	        localStorage.setItem("group", JSON.stringify(selectedGroup));
 
-        window.location.href = "directory.html";
+	        window.location.href = "directory.html";
 
-      };
+	      };
 
-    };
-    
-    var deleteClickHandler = function(row) {
-    	return function(ev) {
-    		
-    		ev.stopPropagation();
-        	var position = row.rowIndex;
+	    };
 
-        	var groupToDeleteUID = groups[position].uid;
-        	var groupToDeleteName = groups[position].name;
-        	var index = groupUIDs.indexOf(groupToDeleteUID);
+	    var editClickHandler = function(row) {
+	    	return function(ev) {
+	    		ev.stopPropagation();
+	    		
+	    		var position = row.rowIndex;
+	    		var selectedGroup = groups[position];
 
-        	var modal = document.getElementById('confirmDeleteModal');
+	        	localStorage.setItem("group", JSON.stringify(selectedGroup));
 
-        	var joinGroupButton = document.getElementById('deleteGroupButton');
-        	var cancelJoinGroupButton = document.getElementById('cancelDeleteGroupButton');
+	    		window.location.href = "createGroup.html";
+	    	};
+	    };
+	    
+	    var deleteClickHandler = function(row) {
+	    	return function(ev) {
+	    		
+	    		ev.stopPropagation();
+	        	var position = row.rowIndex;
 
-        	var passwordPrompt = document.getElementById('deleteGroupPrompt');
-        	passwordPrompt.innerHTML = "This will only remove \"" + groupToDeleteName + "\" from \"My Groups\". You will be able to add it back again later. Continue?";
+	        	var groupToDeleteUID = groups[position].uid;
+	        	var groupToDeleteName = groups[position].name;
+	        	var index = groupUIDs.indexOf(groupToDeleteUID);
 
-        	modal.style.display = "block";
+	        	var modal = document.getElementById("confirmDeleteModal");
 
-  			deleteGroupButton.onclick = function() {
+	        	var confirmDeleteGroupButton = document.getElementById("confirmDeleteGroupButton");
+	        	var cancelDeleteGroupButton = document.getElementById("cancelDeleteGroupButton");
 
-				if (index > -1) {
-        			groupUIDs.splice(position, 1);
-        		};
+	        	var passwordPrompt = document.getElementById('deleteGroupPrompt');
+	        	passwordPrompt.innerHTML = "This will only remove \"" + groupToDeleteName + "\" from \"My Groups\". You will be able to add it back again later. Continue?";
 
-    			updateUserGroups(firebase.auth().currentUser.uid, groupUIDs);
-    			modal.style.display = "none";
+	        	modal.style.display = "block";
 
-    		}
+	  			confirmDeleteGroupButton.onclick = function() {
 
-    		cancelDeleteGroupButton.onclick = function() {
-    			modal.style.display = "none";
-    		}
+	  				previousGroupUIDs = JSON.parse(JSON.stringify(groupUIDs));
 
+					if (index > -1) {
+	        			groupUIDs.splice(position, 1);
+	        		};
+
+	    			updateUserGroups(firebase.auth().currentUser.uid, groupUIDs, previousGroupUIDs, groupToDeleteUID,);
+	    			modal.style.display = "none";
+
+	    		}
+
+	    		cancelDeleteGroupButton.onclick = function() {
+	    			modal.style.display = "none";
+	    		}
+	    	};
+	    };
+
+	    currentRow.onclick = clickHandler(currentRow);
+    	currentDeleteButton.onclick = deleteClickHandler(currentRow);
+    	if (currentEditButton) {
+    		currentEditButton.onclick = editClickHandler(currentRow);
     	}
 
-    }
-     
-    currentRow.onclick = clickHandler(currentRow);
-    currentDeleteButton.onclick = deleteClickHandler(currentRow);
-
-  }
+  	}
 
 }

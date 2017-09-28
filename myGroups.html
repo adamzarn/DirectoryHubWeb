@@ -16,12 +16,12 @@
 
 		<header>
     		<h2 class="group">My Groups</h2>
-    		<h4 id="welcomeLabel" style="margin-left: 20px">Welcome!</h4>
+    		<h4 id="welcomeLabel" style="margin-left: 20px"></h4>
     		<button class="button" id="addGroupButton">Add Group</button>
     		<button class="button" id="logoutButton">Logout</button>
   		</header>
 
-  		<input type="search" id="searchBox" placeholder="Search your groups..." onkeyup="searchMyGroups()"></input>
+  		<input type="search" id="searchBoxMyGroups" placeholder="Search your groups..." onkeyup="searchMyGroups()"></input>
 
   		<table id="groupsTable">
 			<tbody>
@@ -39,10 +39,26 @@
 
     			<div class="twoButtonDiv">
     				<button type="cancel" id="cancelDeleteGroupButton" class="leftButton">Cancel</button>
-    				<button type="submit" id="deleteGroupButton" class = "rightButton">Delete</button>
+    				<button type="submit" id="confirmDeleteGroupButton" class="rightButton">Delete</button>
     			</div>
+
   			</div>
 		</div>
+
+		<div id="addGroupModal" class="addGroupModal">
+  			<div class="addGroupModalContent">
+
+  				<label class="center" id="addGroupLabel">Add Group</label>
+  				<p id="message" class="center">What would you like to do?</p>
+
+    			<div class="twoButtonDiv">
+    				<button type="cancel" id="createGroupButton" class="leftButton">Create Group</button>
+    				<button type="submit" id="searchGroupsButton" class="rightButton">Search Groups</button>
+    			</div>
+
+  			</div>
+		</div>
+
 
 		<script src="jquery-3.2.1.js"></script>
 		<script type="text/javascript" src="myGroups.js"></script>

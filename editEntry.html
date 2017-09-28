@@ -17,6 +17,7 @@
 
 		<header>
 			<h2 id="editEntryName" class="editEntryName"></h2>
+      <button class="button" id="cancelEditEntryButton">Cancel</button>
 			<button class="button" id="submitChangesButton">Submit Changes</button>
   		</header>
 
@@ -43,16 +44,17 @@
 		<div id="loadingModal" class="modal">
   			<div id="loadingModalContent" class="loading-modal-content">
   				<label id="status" class="center"></label>
-    			<div id="loader" class="loader"></div>
+    			<div id="modalLoader" class="loader"></div>
   			</div>
 		</div>
 
 		<div id="areYouSureModal" class="modal">
   			<div id="areYouSureModalContent" class="are-you-sure-modal-content">
+          <label id="areYouSureTitle" class="center"></label>
   				<p id="areYouSure" class="center"></p>
   				<div class="twoButtonDiv">
     				<button type="cancel" id="no" class="leftButton">Cancel</button>
-    				<button type="submit" id="yes" class="rightButton">Submit</button>
+    				<button type="submit" id="yes" class="rightButton">Yes</button>
     			</div>
   			</div>
 		</div>

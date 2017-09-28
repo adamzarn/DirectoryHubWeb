@@ -12,19 +12,21 @@ firebase.initializeApp(config);
 
 var entries = [];
 var group = JSON.parse(localStorage.getItem("group"));
-console.log(group);
-console.log(group.uid);
+
 localStorage.setItem("groupUID", group.uid);
 var myGroupsButton = document.getElementById("myGroupsButton");
 
+var searchBox = document.getElementById("searchBoxDirectory");
+
+var loader = document.getElementById("loader");
+loader.style.display = "";
+
 myGroupsButton.onclick = function() {
-  var searchBox = document.getElementById("searchBox");
   searchBox.value = "";
 	window.location.href = "myGroups.html";
 }
 
 function search() {
-    var searchBox = document.getElementById("searchBox");
     filter = searchBox.value.toLowerCase();
     table = document.getElementById("directoryTable");
     rows = table.getElementsByTagName("tr");
@@ -40,6 +42,16 @@ function search() {
 }
 
 var addEntryButton = document.getElementById("addEntryButton");
+addEntryButton.style.display = "none";
+
+var admins = group.admins;
+var adminKeys = Object.keys(admins);
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (adminKeys.includes(user.uid)) {
+    addEntryButton.style.display = "";
+  }
+});
 
 addEntryButton.onclick = function() {
 
@@ -49,7 +61,6 @@ addEntryButton.onclick = function() {
 }
 
 if (group == null) {
-  var searchBox = document.getElementById("searchBox");
   searchBox.value = "";
 	window.location.href = "index.html"
 }
@@ -238,7 +249,6 @@ function addRowHandlers() {
           var entry = entries[position];
 
           localStorage.setItem("currentEntryKey", entry.key);
-          var searchBox = document.getElementById("searchBox");
           searchBox.value = "";
         	window.location.href = "entry.html";
 
@@ -295,8 +305,7 @@ function getDirectory() {
   });
 
   addRowHandlers();
-  var loader = document.getElementById('loader');
-  loader.style.display = "none"
+  loader.style.display = "none";
 
 });
 

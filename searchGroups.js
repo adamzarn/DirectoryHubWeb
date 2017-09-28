@@ -10,6 +10,8 @@ var config = {
 
 firebase.initializeApp(config);
 
+document.getElementById("byGroup").checked = true;
+
 localStorage.setItem("groups", "null");
 
 var loader = document.getElementById('loader');
@@ -29,6 +31,7 @@ var currentUserName;
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
+    console.log("got user");
     getCurrentUserGroups();
   } else {
     console.log("No user is signed in.");
@@ -37,6 +40,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 function searchGroups() {
 
+  this.groups = [];
   loader.style.display = ""
 
   var table = document.getElementById("groupsTable");
@@ -44,14 +48,23 @@ function searchGroups() {
       table.deleteRow(0);
   }
 
-  this.groups = [];
   var searchTerm = search.value.toLowerCase();
+
   if (searchTerm != "") {
-    queryGroups('lowercasedName', searchTerm);
+    if (document.getElementById("byGroup").checked) {
+      console.log("here");
+      queryGroups("lowercasedName", searchTerm);
+    } else if (document.getElementById("byCreator").checked) {
+      console.log("there");
+      queryGroups("lowercasedCreatedBy", searchTerm);
+    } else if (document.getElementById("byUniqueID").checked) {
+      getGroup(search.value);
+    }
   } else {
     loader.style.display = "none"
     this.groups = [];
   }
+
 }
 
 function queryGroups(searchKey, searchTerm) {
@@ -60,7 +73,7 @@ function queryGroups(searchKey, searchTerm) {
     const query = groups
                 .orderByChild(searchKey)
                 .startAt(searchTerm)
-                .limitToFirst(5);
+                .limitToFirst(20);
 
     query.once('value', function(snapshot) {
 
@@ -104,6 +117,43 @@ function queryGroups(searchKey, searchTerm) {
 
 }
 
+function getGroup(groupUID) {
+
+    const groupRef = firebase.database().ref("Groups").child(groupUID);
+
+    groupRef.once('value', function(childSnapshot) {
+
+        var group = {
+         uid: childSnapshot.key,
+         name: childSnapshot.child('name').val(),
+         lowercasedName: childSnapshot.child('lowercasedName').val(),
+         city: childSnapshot.child('city').val(),
+         state: childSnapshot.child('state').val(),
+         createdBy: childSnapshot.child('createdBy').val(),
+         lowercasedCreatedBy: childSnapshot.child('lowercasedCreatedBy').val(),
+         createdByUid: childSnapshot.child('createdByUid').val(),
+         password: childSnapshot.child('password').val(),
+         admins: childSnapshot.child('admins').val(),
+         users: childSnapshot.child('users').val()
+        };
+
+      console.log(group.name);
+      if (group.name) {
+        this.groups = [group];
+        addRows();
+        addRowHandlers();
+        localStorage.setItem("groups", JSON.stringify(groups));
+        loader.style.display = "none"
+      } else {
+        loader.style.display = "none"
+      }
+
+
+
+    });
+
+}
+
 function addRows() {
 
   var g = this.groups;
@@ -125,6 +175,7 @@ function addRow(uid, name, city, state, createdBy, position) {
     imageCell = document.createElement("td");
     imageCell.setAttribute("class", "imageCell");
     imageElement = document.createElement("img");
+    imageElement.setAttribute("onerror", "this.style.display='none'");
     imageElement.setAttribute("id", "imageElement" + position);
     pathReference.getDownloadURL().then(function(url) {
       document.getElementById("imageElement" + position).src = url;
@@ -224,15 +275,12 @@ function addRowHandlers() {
               });
             }
           });
-
         };
 
         cancelJoinGroupButton.onclick = function() {
           modal.style.display = "none";
         };
-
       };
-
     };
       
     currentRow.onclick = createClickHandler(currentRow);
@@ -240,7 +288,6 @@ function addRowHandlers() {
   }
 
 }
-
 
 function getCurrentUserGroups() {
     
@@ -256,4 +303,7 @@ function getCurrentUserGroups() {
 
 }
 
-
+var searchButton = document.getElementById("searchButton");
+searchButton.onclick = function() {
+    searchGroups();
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+	<head>
+		<title>Directory Hub</title>
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link href="styles/main.css" rel="stylesheet" />
+
+
+		<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+	</head>
+
+	<body class="page">
+
+		<header>
+    		<h2 class="group" id="createGroupHeader">Create Group</h2>
+
+    		<button class="button" id="deleteGroupButton">Delete Group</button>
+    		<button class="button" id="submitCreateGroupButton">Submit</button>
+    		<button class="button" id="cancelCreateGroupButton">Cancel</button>
+
+  		</header>
+
+  		<div id="createGroupDiv">
+
+  			<label type="text" class="inputHeader">UNIQUE ID</label>
+  			</br>
+  			<label type="text" id="uniqueID">NOT YET ASSIGNED</label>
+  			</br>
+  			
+  			<label type="text" class="inputHeader">GROUP NAME</label>
+  			</br>
+	  		<input type="text" id="groupNameBox"></input>
+	  		</br>
+	  		
+	  		<div id="cityStateDiv">
+		  		
+		  		<div id="cityDiv">
+			  		<label type="text" class="inputHeader">CITY</label>
+			  		<input type="text" id="cityBox"></input>
+		  		</div>
+		  		
+		  		<div id="stateDiv">
+			  		<label type="text" class="inputHeader">STATE</label>
+			  		<select type="text" id="stateBox"></select>
+		  		</div>
+
+	  		</div>
+	  		</br>
+
+	  		<label type="text" class="inputHeader">PASSWORD</label>
+	  		</br>
+	  		<input type="text" id="groupPasswordBox"></input>
+
+	  		<label type="text" class="inputHeader">GROUP LOGO</label>
+	  		</br>
+
+	  		<div id="imageDiv">
+		  		
+		  		<div id="groupLogoDiv">
+		  			<img onerror="this.src='ImageThumbnail.png'" id="groupLogo"></img>
+		  		</div>
+
+		  		<div id="imageButtonsDiv">
+			  		<input type="file" class="button" id="uploadImageButton" onchange="handleFiles(event)"></input>
+			  		</br>
+			  		<button class="button" id="removeImageButton" onclick="removeImage()">Remove Image</button>
+		  		</div>
+
+	  		</div>
+	  		</br>
+
+
+    	</div>
+
+    	<div id=manageAdminsDiv>
+    		<label type="text" class="inputHeader">MANAGE ADMINISTRATORS</label>
+	    	<table id="manageAdminsTable">
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+
+		<div id="loadingModal" class="modal">
+  			<div id="loadingModalContent" class="loading-modal-content">
+  				<label id="status" class="center"></label>
+    			<div id="modalLoader" class="loader"></div>
+  			</div>
+		</div>
+
+		<div id="successModal" class="modal">
+  			<div id="successModalContent" class="successModalContent">
+  				<label id="title" class="center"></label>
+  				<p id="message" class="center"></p>
+    			<button type="submit" id="ok" class="center">OK</button>
+    			</div>
+  			</div>
+		</div>
+
+		<div id="areYouSureModal" class="modal">
+  			<div id="areYouSureModalContent" class="are-you-sure-modal-content">
+  				<label id="areYouSureTitle" class="center"></label>
+  				<p id="areYouSure" class="center">Are you sure you want to delete this group?</p>
+  				<div class="twoButtonDiv">
+    				<button type="cancel" id="no" class="leftButton">Cancel</button>
+    				<button type="submit" id="yes" class="rightButton">Yes</button>
+    			</div>
+  			</div>
+		</div>
+
+		<div id="loader" class="loader" style="display: none"></div>
+
+		<script src="jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="createGroup.js"></script>
+	
+	</body>
+
+</html>

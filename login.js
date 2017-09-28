@@ -11,23 +11,35 @@ var config = {
 var loader = document.getElementById('loader');
 loader.style.display = "none"
 
+var loginDiv = document.getElementById("loginDiv");
+var createAccountDiv = document.getElementById("createAccountDiv");
+
 firebase.initializeApp(config);
 
 var loginButton = document.getElementById("loginButton");
 loginButton.onclick = function() {
 
 	var email = document.getElementById("emailBox").value;
-	var password = document.getElementById("passwordBox").value;
+	var password = document.getElementById("passwordBoxLogin").value;
+
+	loader.style.display = "";
+	loginDiv.style.display = "none";
+	createAccountDiv.style.display = "none";
 
 	firebase.auth().signInWithEmailAndPassword(email, password)
 
 	.then(function(user) {
 
 		loader.style.display = "none";
+		loginDiv.style.display = "";
+		createAccountDiv.style.display = "";
 		window.location.href = "myGroups.html";
 
 	}).catch(function(error) {
 
+		loader.style.display = "none";
+		loginDiv.style.display = "";
+		createAccountDiv.style.display = "";
   		var errorCode = error.code;
   		var errorMessage = error.message;
 

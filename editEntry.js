@@ -9,12 +9,11 @@ var config = {
 
 firebase.initializeApp(config);
 
-var currentEntry = JSON.parse(localStorage.getItem("currentEntry"));
-console.log(currentEntry);
-console.log(currentEntry["name"]);
-
-if (!currentEntry) {
-	console.log("Here")
+var currentEntry = localStorage.getItem("currentEntry");
+if (currentEntry) {
+	currentEntry = JSON.parse(currentEntry);
+} else {
+	currentEntry = {};
 	currentEntry["key"] = "";
 	currentEntry["name"] = "";
 	currentEntry["phone"] = "";
@@ -80,6 +79,11 @@ addPersonButton.onclick = function() {
 	modal.style.display = "block";
 }
 
+var cancelEditEntryButton = document.getElementById("cancelEditEntryButton");
+cancelEditEntryButton.onclick = function() {
+	goBack();
+}
+
 var submitChangesButton = document.getElementById("submitChangesButton");
 submitChangesButton.onclick = function() {
 
@@ -110,6 +114,31 @@ submitChangesButton.onclick = function() {
 		alert("If an entry has a wife, it must also have a husband.");
 		return
 	}
+
+	var areYouSureModal = document.getElementById("areYouSureModal");
+	areYouSureModal.style.display = "block";
+	if (currentEntry.key == "") {
+		document.getElementById("areYouSureTitle").innerText = "Add Entry";
+		document.getElementById("areYouSure").innerText = "Are you sure you want to add this entry?";
+	} else {
+		document.getElementById("areYouSureTitle").innerText = "Submit Changes";
+		document.getElementById("areYouSure").innerText = "Are you sure you want to submit these changes?";
+	}
+
+	var cancelSubmitButton = document.getElementById("no");
+	cancelSubmitButton.onclick = function() {
+		areYouSureModal.style.display = "none";
+	}
+
+	var submitEntryButton = document.getElementById("yes");
+	submitEntryButton.onclick = function() {
+		areYouSureModal.style.display = "none";
+		submitEntry()
+	}
+
+}
+
+function submitEntry() {
 
 	var modal = document.getElementById('loadingModal');
 	var status = document.getElementById('status');
@@ -151,13 +180,14 @@ submitChangesButton.onclick = function() {
   					} else {
   						localStorage.setItem("currentEntryKey", uid)
   						localStorage.setItem("currentEntry", "null");
-  						window.location.href = "entry.html";
+  						goBack();
 					}
 				}
 			}
 		);
 		i++;
 	});
+
 }
 
 function createAddress(currentEntry) {
@@ -269,7 +299,7 @@ function setUpModal() {
 	        type: addPersonType.value, 
 	        phone: addPersonPhone.value,
 	        email: addPersonEmail.value, 
-	        birthOrder: addPersonBirthOrder.value 
+	        birthOrder: parseInt(addPersonBirthOrder.value)
 	    };
 
   		if (addPersonLabel.innerText == "Add Person") {
@@ -496,10 +526,12 @@ function addPerson(person, i) {
     deleteButton.onclick = function() {
     	var areYouSureModal = document.getElementById("areYouSureModal");
     	areYouSureModal.style.display = "block";
+    	var areYouSureTitle = document.getElementById("areYouSureTitle");
     	var areYouSure = document.getElementById("areYouSure");
     	var noButton = document.getElementById("no");
     	var yesButton = document.getElementById("yes");
-    	areYouSure.innerText = "This can't be undone. Are you sure you want to delete this person?"
+    	areYouSureTitle.innerText = "Delete Person";
+    	areYouSure.innerText = "This can't be undone. Are you sure you want to delete this person?";
     	noButton.innerText = "No";
     	yesButton.innerText = "Yes";
 
@@ -554,4 +586,12 @@ function getBirthOrders(people) {
 		}
 	});
 	return birthOrders;
+}
+
+function goBack() {
+	if (currentEntry.key == "") {
+  		window.location.href = "directory.html";
+  	} else {
+  		window.location.href = "entry.html";
+  	}
 }
