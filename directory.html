@@ -6,6 +6,7 @@
 		<link href="styles/main.css" rel="stylesheet" />
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon-hd.ico">
 
 		<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
 
@@ -15,22 +16,73 @@
 
 		<header>
 			<h2>Directory</h2>
+			<img id="directoryImage" class="groupLogo" onerror="this.style.display='none'"></img>
 			<button class="button" id="myGroupsButton">Back to My Groups</button>
 			<br>
     		<h4 class="groupName" id="groupName"></h4>
+    		<button class="button" id="downloadPDFButton" style="display:none">PDF</button>
+        <button class="button" id="downloadCSVButton" style="display:none">CSV</button>
+    		<button class="button" id="editAppendixButton" style="display:none">Edit PDF Appendix</button>
     		<button class="button" id="addEntryButton">Add Entry</button>
   		</header>
 
-  		<input type="search" id="searchBoxDirectory" placeholder="Search by Last Name..." onkeyup="search()"></input>
+  		<input type="search" id="searchBoxDirectory" placeholder="Search by Last Name..." onkeyup="searchDirectory()">
 
 	  	<table class="directoryTable" id="directoryTable">
 			<tbody>
 			</tbody>
 		</table>
 
+		<div id="editAppendixModal" class="editAppendixModal">
+  			<div class="editAppendixModalContent">
+  				
+  				<label class="center" id="editAppendixLabel">Edit Appendix</label>
+  				
+  				<label id="editAppendixPrompt" class="prompt">Header 1</label>
+  				</br>
+  				<input type="input" class="edit" id="headerInput1"></input>
+
+  				<label id="contentPrompt" class="prompt">Content 1</label>
+  				</br>
+  				<textarea class="contentTextBox" id="contentInput1"></textarea>
+
+  				<label id="editAppendixPrompt" class="prompt">Header 2</label>
+  				</br>
+  				<input type="input" class="edit" id="headerInput2"></input>
+
+  				<label id="contentPrompt" class="prompt">Content 2</label>
+  				</br>
+  				<textarea class="contentTextBox" id="contentInput2"></textarea>
+
+    			<div class="twoButtonDiv">
+    				<button type="cancel" id="cancelEditAppendixButton" class="leftButton">Cancel</button>
+    				<button type="submit" id="editAppendixSubmitButton" class="rightButton">Submit</button>
+    			</div>
+  			</div>
+		</div>
+
 		<div id="loader" class="loader"></div>
 
-		<script type="text/javascript" src="directory.js"></script>
+		<script type="text/javascript" src="directoryBundle.js"></script>
+
+		<script>
+			function searchDirectory() {
+    			filter = document.getElementById("searchBoxDirectory").value.toLowerCase();
+    			table = document.getElementById("directoryTable");
+    			rows = table.getElementsByTagName("tr");
+    			for (i = 0; i < rows.length; i++) {
+        			var cell = rows[i].getElementsByTagName("td")[0];
+        			var header = cell.getElementsByTagName("p")[0];
+        			if (header.innerText.toLowerCase().indexOf(filter) > -1) {
+            			rows[i].style.display = "";
+        			} else {
+            			rows[i].style.display = "none";
+        			}
+    			}
+			}
+		</script>
+
+		
 	
 	</body>
 

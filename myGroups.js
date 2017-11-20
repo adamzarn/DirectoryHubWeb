@@ -63,12 +63,17 @@ firebase.auth().onAuthStateChanged(function(user) {
   	welcomeLabel.innerText = "Welcome " + firebase.auth().currentUser.displayName + "!";
     loadGroups();
   } else {
-    console.log("No user is signed in.");
+  	var modal = document.getElementById("successModal")
+    document.getElementById("title").innerText = "No user is logged in";
+  	modal.style.display = "block";
+  	document.getElementById("ok").onclick = function() {
+  		modal.style.display = "none";
+  	}
   }
 });
 
 function searchMyGroups() {
-    var search = document.getElementById("searchBox");
+    var search = document.getElementById("searchBoxMyGroups");
     var filter = search.value.toLowerCase();
     table = document.getElementById("groupsTable");
     rows = table.getElementsByTagName("tr");
@@ -189,13 +194,17 @@ function addRow(uid, name, city, state, createdBy, admins, position) {
     imageCell.setAttribute("class", "imageCell");
     imageElement = document.createElement("img");
     imageElement.setAttribute("id", "imageElement" + position);
-    imageElement.setAttribute("onerror", "this.style.display='none'");
+    imageElement.setAttribute("class", "groupLogo");
     pathReference.getDownloadURL().then(function(url) {
-      document.getElementById("imageElement" + position).src = url;
+   	  if (url.length > 0) {
+   	  	document.getElementById("imageElement" + position).src = url;
+   	  	document.getElementById("imageElement" + position).style.display = "";
+      }
     }).catch(function(error) {
       console.log(error);
     });
     imageCell.appendChild(imageElement);
+    imageElement.style.display = "none";
 
     textCell = document.createElement("td");
     textCell.setAttribute("class", "cell");

@@ -165,6 +165,18 @@ function addAddress(entry) {
 		entryDetails.appendChild(newHeader);
 		entryDetails.appendChild(newDiv);
 
+		newDiv.onclick = function() {
+			addressString = street.innerText + "+" + cityStateZipString;
+			window.open("https://www.google.com/maps/place/" + addressString);
+		}
+
+		newDiv.onmouseenter = function() {
+			newDiv.setAttribute("class", "mousedOverDetailDiv"); 
+		}
+
+		newDiv.onmouseleave = function() {
+			newDiv.setAttribute("class", "detailDiv");
+		}
 	}
 
 }

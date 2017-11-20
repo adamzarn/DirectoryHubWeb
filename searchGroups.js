@@ -25,6 +25,14 @@ myGroupsButton.onclick = function() {
 var storage = firebase.storage();
 var title = document.getElementById('title');
 var search = document.getElementById('searchBox');
+
+search.onkeyup=function(e) {
+    if(e.keyCode==13){
+        console.log("onkeyup");
+        searchGroups();
+    }
+}
+
 var groups = [];
 var currentUserGroups = [];
 var currentUserName;
@@ -98,6 +106,8 @@ function queryGroups(searchKey, searchTerm) {
              admins: childSnapshot.child('admins').val(),
              users: childSnapshot.child('users').val()
             };
+
+            console.log(childSnapshot.child('name').val());
 
             this.groups.push(group);
 
@@ -177,6 +187,7 @@ function addRow(uid, name, city, state, createdBy, position) {
     imageElement = document.createElement("img");
     imageElement.setAttribute("onerror", "this.style.display='none'");
     imageElement.setAttribute("id", "imageElement" + position);
+    imageElement.setAttribute("class", "groupLogo");
     pathReference.getDownloadURL().then(function(url) {
       document.getElementById("imageElement" + position).src = url;
     }).catch(function(error) {

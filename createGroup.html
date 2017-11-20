@@ -6,11 +6,18 @@
 		
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<link href="styles/main.css" rel="stylesheet" />
+		<link rel="shortcut icon" type="image/x-icon" href="images/favicon-hd.ico">
 
 
 		<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
 
 	</head>
+
+	<style>
+		header {
+			z-index: 2;
+		}
+	</style>
 
 	<body class="page">
 
@@ -23,64 +30,71 @@
 
   		</header>
 
-  		<div id="createGroupDiv">
+  		<div class="twoColumnInput">
 
-  			<label type="text" class="inputHeader">UNIQUE ID</label>
-  			</br>
-  			<label type="text" id="uniqueID">NOT YET ASSIGNED</label>
-  			</br>
-  			
-  			<label type="text" class="inputHeader">GROUP NAME</label>
-  			</br>
-	  		<input type="text" id="groupNameBox"></input>
-	  		</br>
-	  		
-	  		<div id="cityStateDiv">
-		  		
-		  		<div id="cityDiv">
-			  		<label type="text" class="inputHeader">CITY</label>
-			  		<input type="text" id="cityBox"></input>
-		  		</div>
-		  		
-		  		<div id="stateDiv">
-			  		<label type="text" class="inputHeader">STATE</label>
-			  		<select type="text" id="stateBox"></select>
-		  		</div>
+  			<div class="row">
 
-	  		</div>
-	  		</br>
+		  		<div id="createGroupDiv" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 
-	  		<label type="text" class="inputHeader">PASSWORD</label>
-	  		</br>
-	  		<input type="text" id="groupPasswordBox"></input>
-
-	  		<label type="text" class="inputHeader">GROUP LOGO</label>
-	  		</br>
-
-	  		<div id="imageDiv">
-		  		
-		  		<div id="groupLogoDiv">
-		  			<img onerror="this.src='ImageThumbnail.png'" id="groupLogo"></img>
-		  		</div>
-
-		  		<div id="imageButtonsDiv">
-			  		<input type="file" class="button" id="uploadImageButton" onchange="handleFiles(event)"></input>
+		  			<label type="text" class="inputHeader">UNIQUE ID</label>
+		  			</br>
+		  			<label type="text" id="uniqueID">NOT YET ASSIGNED</label>
+		  			</br>
+		  			
+		  			<label type="text" class="inputHeader">GROUP NAME</label>
+		  			</br>
+			  		<input type="text" id="groupNameBox"></input>
 			  		</br>
-			  		<button class="button" id="removeImageButton" onclick="removeImage()">Remove Image</button>
-		  		</div>
+			  		
+			  		<div id="cityStateDiv">
+				  		
+				  		<div id="cityDiv">
+					  		<label type="text" class="inputHeader">CITY</label>
+					  		<input type="text" id="cityBox"></input>
+				  		</div>
+				  		
+				  		<div id="stateDiv">
+					  		<label type="text" class="inputHeader">STATE</label>
+					  		<select type="text" id="stateBox"></select>
+				  		</div>
 
-	  		</div>
-	  		</br>
+			  		</div>
+			  		</br>
 
+			  		<label type="text" class="inputHeader">PASSWORD</label>
+			  		</br>
+			  		<input type="text" id="groupPasswordBox"></input>
 
-    	</div>
+			  		<label type="text" class="inputHeader">GROUP LOGO</label>
+			  		</br>
 
-    	<div id=manageAdminsDiv>
-    		<label type="text" class="inputHeader">MANAGE ADMINISTRATORS</label>
-	    	<table id="manageAdminsTable">
-				<tbody>
-				</tbody>
-			</table>
+			  		<div id="imageDiv">
+				  		
+				  		<div id="groupLogoDiv">
+				  			<img class="groupLogo" onerror="this.src='ImageThumbnail.png'" id="groupLogo"></img>
+				  		</div>
+
+				  		<div id="imageButtonsDiv">
+					  		<input type="file" class="button" id="uploadImageButton" onchange="handleFiles(event)"></input>
+					  		</br>
+					  		<button class="button" id="removeImageButton" onclick="removeImage()">Remove Image</button>
+				  		</div>
+
+			  		</div>
+			  		</br>
+
+		    	</div>
+
+		    	<div id=manageAdminsDiv class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+		    		<label type="text" class="inputHeader">MANAGE ADMINISTRATORS</label>
+			    	<table id="manageAdminsTable">
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+
 		</div>
 
 		<div id="loadingModal" class="modal">

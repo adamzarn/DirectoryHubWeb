@@ -77,6 +77,23 @@ h2.editEntryName {
     border-radius: 4px;
 }
 
+#directoryImage {
+    float: left;
+    position: absolute;
+    left: 145px;
+    top: 25px;
+    width: 45px;
+    height: 45px;
+    background-color: white;
+}
+
+#downloadPDFButton, #downloadCSVButton, #editAppendixButton {
+    float: none;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
 #searchDiv {
     width: 100%;
 }
@@ -269,16 +286,6 @@ h2.editEntryName {
     font-size: 18px;
 }
 
-#loginDiv, #createGroupDiv {
-    width: 50%;
-    float: left;
-}
-
-#createAccountDiv, #manageAdminsDiv {
-    width: 50%;
-    float: right;
-}
-
 #manageAdminsTable {
     padding-left: 10px;
     padding-right: 10px;
@@ -349,7 +356,7 @@ tr {
     height: 30px;
 }
 
-img {
+.groupLogo {
     display: block;
     margin: auto;
     height: 50px;
@@ -359,6 +366,11 @@ img {
     border-radius: 50%;
 }
 
+.appLink {
+    width: 150px; /* you can use % */
+    height: auto;
+}
+
 .imageCell {
     height: 50px;
     width: 75px;
@@ -366,7 +378,6 @@ img {
 
 .groupName {
     margin: -30px 0px 10px 10px;
-    width: 400px;
 }
 
 .groupHeader {
@@ -402,7 +413,7 @@ img {
     margin-bottom: 0px;
 }
 
-.edit {
+.edit, .contentTextBox {
     margin: 0px 10px 4px 10px;
     width: calc(100% - 20px);
     padding-left: 4px;
@@ -412,6 +423,10 @@ img {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
+}
+
+.contentTextBox {
+    resize: vertical
 }
 
 .deleteButton {
@@ -556,7 +571,7 @@ input[type="radio"] {
     border-radius: 6px;
 }
 
-.personModal, .joinGroupModal, .confirmDeleteModal, .addGroupModal, .successModal {
+.personModal, .joinGroupModal, .confirmDeleteModal, .addGroupModal, .successModal, .editAppendixModal {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -569,7 +584,7 @@ input[type="radio"] {
     background-color: rgba(0,0,0,0.4);
 }
 
-.personModalContent, .joinGroupModalContent, .confirmDeleteModalContent, .addGroupModalContent, .successModalContent {
+.personModalContent, .joinGroupModalContent, .confirmDeleteModalContent, .addGroupModalContent, .successModalContent, .editAppendixModalContent {
     background-color: #fefefe;
     margin: 12% auto;
     border: 1px solid #888;
@@ -634,6 +649,19 @@ input[type="radio"] {
     width: 100% - 20px;
     margin: 0px 10px 10px 10px;
     border-radius: 4px;
+    border-style: solid;
+    border-color: #efefef;
+    border-width: 1px;
+}
+
+.mousedOverDetailDiv {
+    background: #efefef;
+    width: 100% - 20px;
+    margin: 0px 10px 10px 10px;
+    border-radius: 4px;
+    border-style: solid;
+    border-color: #6b6f75;
+    border-width: 1px;
 }
 
 .boldHeader {
@@ -764,7 +792,7 @@ input[type="radio"] {
     margin-top: 61px;
 }
 
-#loginDiv, #createAccountDiv, #createGroupDiv, #manageAdminsDiv {
+.twoColumnInput {
     margin-top: 61px;
 }
 
